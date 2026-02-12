@@ -2182,7 +2182,37 @@
     }
   .launcher-screen{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);display:flex;align-items:center;justify-content:center;z-index:20000}.launcher-box{background:white;border-radius:20px;padding:40px;max-width:900px;width:90%;box-shadow:0 25px 80px rgba(0,0,0,0.5)}.launcher-header{text-align:center;margin-bottom:30px}.launcher-header h1{font-size:2rem;color:#1e3a5f;margin:10px 0 5px 0}.launcher-header p{color:#666;font-size:1rem}.version-badge{display:inline-block;background:#8b5cf6;color:white;padding:4px 12px;border-radius:20px;font-size:0.75rem;font-weight:600;margin-top:10px}.launcher-options{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:30px}.launcher-option{border:2px solid #e0e0e0;border-radius:15px;padding:25px;cursor:pointer;transition:all 0.3s ease;position:relative}.launcher-option:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,0.1)}.demo-option:hover{border-color:#27ae60;background:#f0fff4}.production-option:hover{border-color:#3498db;background:#f0f7ff}.option-icon{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:1.8rem}.demo-option .option-icon{background:#e8f5e9;color:#27ae60}.production-option .option-icon{background:#e3f2fd;color:#3498db}.launcher-option h3{text-align:center;margin:0 0 8px 0;color:#1e3a5f;font-size:1.2rem}.launcher-option>p{text-align:center;color:#666;font-size:0.9rem;margin-bottom:15px}.launcher-option ul{list-style:none;padding:0;margin:0 0 20px 0}.launcher-option li{padding:6px 0;color:#555;font-size:0.85rem;display:flex;align-items:center;gap:8px}.btn-demo,.btn-production{width:100%;padding:12px;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.3s}.btn-demo{background:linear-gradient(135deg,#27ae60,#2ecc71);color:white}.btn-demo:hover{background:linear-gradient(135deg,#219a52,#27ae60)}.btn-production{background:linear-gradient(135deg,#3498db,#2980b9);color:white}.btn-production:hover{background:linear-gradient(135deg,#2980b9,#1f6aa5)}.launcher-footer{text-align:center;color:#999;font-size:0.8rem;border-top:1px solid #eee;padding-top:20px}.demo-banner{position:fixed;top:0;left:0;right:0;background:linear-gradient(90deg,#e67e22,#f39c12);color:white;text-align:center;padding:8px;font-weight:600;z-index:9999;font-size:0.9rem}</style>
 </head>
-<body>
+<body><script>// === BIBOB-STYLE LAUNCHER ===
+const Launcher = {
+    startDemo: function() {
+        document.getElementById('launcherScreen').style.display = 'none';
+        this.addDemoBanner();document.body.style.paddingTop='36px';
+        // Trigger demo data loading
+        var demoBtn = document.getElementById('btnStartDemo');
+        if (demoBtn) demoBtn.click();
+        console.log('[Vitaliteitstool] Demo modus gestart');
+    },
+    startProduction: function() {
+        document.getElementById('launcherScreen').style.display = 'none';
+        // Show auth overlay for production
+        var authOverlay = document.getElementById('authOverlay');
+        if (authOverlay) authOverlay.style.display = 'flex';
+        // Also trigger production button if it exists
+        var prodBtn = document.getElementById('btnStartProd');
+        if (prodBtn) prodBtn.click();
+        console.log('[Vitaliteitstool] Productie modus gestart');
+    },
+    addDemoBanner: function() {
+        if (document.getElementById('demoBanner')) return;
+        var banner = document.createElement('div');
+        banner.id = 'demoBanner';
+        banner.className = 'demo-banner';
+        banner.innerHTML = '\u26A0\uFE0F DEMO MODUS - Niet voor officieel gebruik - Alleen voor demonstratiedoeleinden';
+        document.body.insertBefore(banner, document.body.firstChild);
+    }
+};
+window.Launcher = Launcher;
+// === END LAUNCHER ===</script>
 
 <!-- STARTUP MODE SELECTOR — getoond bij opstart voor keuze demo/productie -->
 <div id="launcherScreen" class="launcher-screen"><div class="launcher-box"><div class="launcher-header"><div style="width:64px;height:64px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;color:white;font-size:32px;font-weight:800">V</div><h1>Vitaliteitstool</h1><p>Analyseprogramma voor Dynamische Binnensteden</p><span class="version-badge">v1.0 — Proof of Concept</span></div><div class="launcher-options"><div class="launcher-option demo-option" onclick="Launcher.startDemo()"><div class="option-icon"><i style="font-style:normal;font-size:2rem">&#x1F5FA;&#xFE0F;</i></div><h3>Demo Modus</h3><p>Verken de tool met voorbeelddata</p><ul><li>&#x2705; Volledige functionaliteit</li><li>&#x2705; Gemeente Purmerend als voorbeeld</li><li>&#x2705; Geen licentie nodig</li><li>&#x26A0;&#xFE0F; Niet voor officieel gebruik</li></ul><button class="btn-demo" onclick="event.stopPropagation(); Launcher.startDemo()">&#x1F680; Start Demo</button></div><div class="launcher-option production-option" onclick="Launcher.startProduction()"><div class="option-icon"><i style="font-style:normal;font-size:2rem">&#x1F4CA;</i></div><h3>Productie Modus</h3><p>Beveiligde toegang met 2FA</p><ul><li>&#x2705; Wachtwoord verificatie</li><li>&#x2705; 2FA authenticatie</li><li>&#x2705; Volledige beveiliging</li><li>&#x2705; Officieel gebruik</li></ul><button class="btn-production" onclick="event.stopPropagation(); Launcher.startProduction()">&#x1F512; Inloggen</button></div></div><div class="launcher-footer"><p>&copy; 2025 Knowledge by Data B.V. | In opdracht van City Deal Dynamische Binnensteden</p><p style="font-size:0.7rem;margin-top:5px">Contact: 06-84 82 07 08 | info@knowledgebydata.nl</p></div></div></div><div style="display:none"><div id="btnStartDemo"></div><div id="btnStartProd"></div></div>
@@ -2531,37 +2561,6 @@
 </div>
 
 <script src="libs/leaflet.min.js">
-// === BIBOB-STYLE LAUNCHER ===
-const Launcher = {
-    startDemo: function() {
-        document.getElementById('launcherScreen').style.display = 'none';
-        this.addDemoBanner();
-        // Trigger demo data loading
-        var demoBtn = document.getElementById('btnStartDemo');
-        if (demoBtn) demoBtn.click();
-        console.log('[Vitaliteitstool] Demo modus gestart');
-    },
-    startProduction: function() {
-        document.getElementById('launcherScreen').style.display = 'none';
-        // Show auth overlay for production
-        var authOverlay = document.getElementById('authOverlay');
-        if (authOverlay) authOverlay.style.display = 'flex';
-        // Also trigger production button if it exists
-        var prodBtn = document.getElementById('btnStartProd');
-        if (prodBtn) prodBtn.click();
-        console.log('[Vitaliteitstool] Productie modus gestart');
-    },
-    addDemoBanner: function() {
-        if (document.getElementById('demoBanner')) return;
-        var banner = document.createElement('div');
-        banner.id = 'demoBanner';
-        banner.className = 'demo-banner';
-        banner.innerHTML = '\u26A0\uFE0F DEMO MODUS - Niet voor officieel gebruik - Alleen voor demonstratiedoeleinden';
-        document.body.insertBefore(banner, document.body.firstChild);
-    }
-};
-window.Launcher = Launcher;
-// === END LAUNCHER ===
 </script>
 <script src="libs/xlsx.full.min.js"></script>
 <script src="branch-qualifications.js"></script>
