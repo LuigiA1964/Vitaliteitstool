@@ -1,0 +1,109 @@
+{
+  "build": {
+    "distDir": "../dist",
+    "devPath": "../dist",
+    "beforeBuildCommand": "",
+    "beforeDevCommand": ""
+  },
+  "package": {
+    "productName": "Vitaliteitstool",
+    "version": "1.0.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "dialog": {
+        "all": false,
+        "save": true,
+        "open": true,
+        "message": true,
+        "ask": true,
+        "confirm": true
+      },
+      "fs": {
+        "all": false,
+        "readFile": true,
+        "writeFile": true,
+        "readDir": true,
+        "createDir": true,
+        "exists": true,
+        "scope": [
+          "$APPDATA/**",
+          "$DOCUMENT/**",
+          "$DOWNLOAD/**",
+          "$DESKTOP/**"
+        ]
+      },
+      "path": {
+        "all": true
+      },
+      "os": {
+        "all": true
+      },
+      "shell": {
+        "open": true
+      },
+      "window": {
+        "all": false,
+        "close": true,
+        "setTitle": true,
+        "setFullscreen": true,
+        "setSize": true,
+        "setMinSize": true,
+        "maximize": true,
+        "unmaximize": true,
+        "minimize": true,
+        "unminimize": true,
+        "show": true,
+        "hide": true,
+        "setFocus": true,
+        "center": true
+      },
+      "clipboard": {
+        "writeText": true
+      }
+    },
+    "bundle": {
+      "active": true,
+      "category": "BusinessFinance",
+      "identifier": "nl.knowledgebydata.vitaliteitstool",
+      "icon": [
+        "icons/icon.ico",
+        "icons/icon.png"
+      ],
+      "targets": [
+        "nsis",
+        "msi"
+      ],
+      "windows": {
+        "certificateThumbprint": null,
+        "digestAlgorithm": "sha256",
+        "timestampUrl": "",
+        "wix": {
+          "language": "nl-NL"
+        },
+        "nsis": {
+          "languages": [
+            "Dutch"
+          ],
+          "displayLanguageSelector": false
+        }
+      }
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "title": "Vitaliteitstool — Analyseprogramma",
+        "width": 1400,
+        "height": 900,
+        "minWidth": 1024,
+        "minHeight": 700,
+        "resizable": true,
+        "fullscreen": false,
+        "center": true
+      }
+    ]
+  }
+}

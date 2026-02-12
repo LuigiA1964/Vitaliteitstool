@@ -1,0 +1,78 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_type:
+        description: 'Installer type'
+        required: true
+        default: 'nsis'
+        type: choice
+        options:
+          - nsis
+          - msi
+          - both
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('src-tauri/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Determine bundle target
+        id: bundle
+        shell: bash
+        run: |
+          TYPE="${{ github.event.inputs.bundle_type || 'both' }}"
+          if [ "$TYPE" = "nsis" ]; then
+            echo "args=--bundles nsis" >> $GITHUB_OUTPUT
+          elif [ "$TYPE" = "msi" ]; then
+            echo "args=--bundles msi" >> $GITHUB_OUTPUT
+          else
+            echo "args=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Tauri application
+        run: npm run tauri:build -- ${{ steps.bundle.outputs.args }}
+
+      - name: Upload NSIS installer
+        if: ${{ github.event.inputs.bundle_type != 'msi' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitaliteitstool-nsis-installer
+          path: src-tauri/target/release/bundle/nsis/*.exe
+
+      - name: Upload MSI installer
+        if: ${{ github.event.inputs.bundle_type != 'nsis' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vitaliteitstool-msi-installer
+          path: src-tauri/target/release/bundle/msi/*.msi

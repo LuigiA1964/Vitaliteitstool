@@ -1,0 +1,12 @@
+{
+  "name": "vitaliteitstool",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "tauri:build": "cd src-tauri && cargo build --release",
+    "tauri:dev": "cd src-tauri && cargo run"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^1.5.0"
+  }
+}
