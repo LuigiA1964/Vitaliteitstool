@@ -65,7 +65,7 @@
     },
     "bundle": {
       "active": true,
-      "category": "BusinessFinance",
+      "category": "Business",
       "identifier": "nl.knowledgebydata.vitaliteitstool",
       "icon": [
         "icons/icon.ico",
