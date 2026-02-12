@@ -5842,9 +5842,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (mainLayout) mainLayout.style.display = 'none';
 
   function dismissStartup(callback) {
-    startupOverlay.classList.add('startup-overlay--hidden');
+    if (startupOverlay) {
+      startupOverlay.classList.add('startup-overlay--hidden');
+    }
     setTimeout(() => {
-      startupOverlay.style.display = 'none';
+      if (startupOverlay) startupOverlay.style.display = 'none';
       if (mainHeader) mainHeader.style.display = '';
       if (mainLayout) mainLayout.style.display = '';
       initApp();
