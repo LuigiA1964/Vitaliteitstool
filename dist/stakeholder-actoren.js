@@ -2421,6 +2421,188 @@ function getRiskProfile(actorId) {
 }
 
 // ==========================================
+// ARCHETYPEN VASTGOEDEIGENAREN
+// Bron: City Deal Dynamische Binnensteden
+// "Vastgoed Vertaald — De 12 archetypische vastgoedeigenaren"
+// ==========================================
+
+const VASTGOED_ARCHETYPEN = [
+  {
+    id: 'STRATEEG',
+    naam: 'De Strateeg',
+    type: 'Institutionele investeerder',
+    icoon: '♟️',
+    kleur: '#1B3A5C',
+    voorbeelden: 'Pensioenfondsen, verzekeraars, sovereign wealth funds',
+    kernmotivatie: 'Stabiel, langetermijnrendement met laag risico. Stuurt op ESG-doelen, duurzaamheid en maatschappelijke impact naast financieel rendement.',
+    gedrag: 'Handelt op basis van data, benchmarks en uitgebreide due diligence. Besluiten worden collegiaal genomen via beleggingscommissies. Weinig emotie, veel structuur.',
+    houding_gemeente: 'Open voor dialoog als de gemeente professioneel opereert. Verwacht duidelijke kaders, langetermijnvisie en betrouwbaar beleid. Kan investeren in gebiedsontwikkeling als het past binnen mandaat.',
+    valkuil: 'Traag in besluitvorming door interne governance. Kan star zijn in afwijking van beleggingsmandaat.',
+    benadering: 'Benader via asset manager, niet direct. Presenteer data-onderbouwd, met nadruk op langetermijnwaardecreatie en ESG-aansluiting.'
+  },
+  {
+    id: 'NAVIGATOR',
+    naam: 'De Navigator',
+    type: 'Vastgoedfonds',
+    icoon: '🧭',
+    kleur: '#2E5E8E',
+    voorbeelden: 'Beursgenoteerde en niet-beursgenoteerde vastgoedfondsen',
+    kernmotivatie: 'Rendement voor aandeelhouders/participanten. Combineert groei met risicospreiding over portefeuille en regio.',
+    gedrag: 'Professioneel fondsmanagement met kwartaalrapportages. Actief portefeuillebeheer: kopen, optimaliseren, verkopen. Monitort markttrends nauwlettend.',
+    houding_gemeente: 'Zakelijk en resultaatgericht. Ziet gemeente als samenwerkingspartner als het rendementsmodel klopt. Kan snel schakelen bij heldere businesscase.',
+    valkuil: 'Kan korte termijn rendementseisen laten prevaleren boven gebiedsbelang. Verkoopt bij tegenvallend rendement.',
+    benadering: 'Spreek de taal van rendement en risico. Toon aan hoe gemeentelijk beleid waarde toevoegt aan hun portefeuille.'
+  },
+  {
+    id: 'BESCHERMER',
+    naam: 'De Beschermer',
+    type: 'Family Office',
+    icoon: '🛡️',
+    kleur: '#4A7A3D',
+    voorbeelden: 'Vermogende families met eigen beleggingsorganisatie',
+    kernmotivatie: 'Vermogensbehoud over generaties. Combinatie van financieel rendement en familiaire waarden. Vaak lokale of regionale binding.',
+    gedrag: 'Lange horizon, geduldig kapitaal. Besluitvorming vaak informeel via familieoverleg. Kan eigenzinnig zijn maar ook loyaal aan een gebied.',
+    houding_gemeente: 'Kan een strategische partner zijn vanwege langetermijnhorizon en lokale betrokkenheid. Verwacht persoonlijke relatie en discretie.',
+    valkuil: 'Kan besluiteloos zijn door familiedynamiek. Soms emotionele gehechtheid aan panden die rationele keuzes blokkeert.',
+    benadering: 'Bouw een persoonlijke relatie op. Respecteer de familiewaarden. Toon hoe gebiedsontwikkeling het familiepatrimonium versterkt.'
+  },
+  {
+    id: 'VERBINDER',
+    naam: 'De Verbinder',
+    type: 'Maatschappelijke organisatie',
+    icoon: '🤝',
+    kleur: '#E67E22',
+    voorbeelden: 'Stichtingen, coöperaties, maatschappelijk vastgoedbeheerders',
+    kernmotivatie: 'Maatschappelijke impact realiseren. Vastgoed als middel voor sociale doelen: betaalbaar wonen, zorg, cultuur, onderwijs.',
+    gedrag: 'Missiegedreven, bereid tot lagere rendementen voor maatschappelijk resultaat. Werkt vaak samen met gemeente en andere publieke partijen.',
+    houding_gemeente: 'Natuurlijke partner voor gemeenten. Deelt vaak dezelfde doelen rond leefbaarheid en inclusiviteit. Verwacht steun en facilitering.',
+    valkuil: 'Kan financieel kwetsbaar zijn. Soms idealistisch zonder haalbare businesscase. Afhankelijk van subsidies.',
+    benadering: 'Versterk de samenwerking. Help met financieringsconstructies en vergunningen. Benut als brugfunctie naar de buurt.'
+  },
+  {
+    id: 'HOEDER',
+    naam: 'De Hoeder',
+    type: 'Woningcorporatie',
+    icoon: '🏠',
+    kleur: '#3498DB',
+    voorbeelden: 'Woningbouwverenigingen, woonstichtingen',
+    kernmotivatie: 'Betaalbaar en goed wonen voor doelgroepen. Maatschappelijk rendement staat boven financieel rendement. Gebonden aan DAEB-regels.',
+    gedrag: 'Sterk gereguleerd, opereert binnen wettelijke kaders (Woningwet, AW). Professionele organisatie met prestatieafspraken. Langetermijndenker.',
+    houding_gemeente: 'Verplichte samenwerkingspartner via prestatieafspraken. Kan impuls geven aan wonen boven winkels en transformatieopgaven.',
+    valkuil: 'Beperkt door regelgeving in commercieel vastgoed. Intern kan prioritering traag verlopen. Soms risicomijdend.',
+    benadering: 'Werk via prestatieafspraken. Verken gezamenlijk de mogelijkheden voor gemengde gebiedsontwikkeling (wonen-werken-voorzieningen).'
+  },
+  {
+    id: 'JAGER',
+    naam: 'De Jager',
+    type: 'Private Equity',
+    icoon: '🎯',
+    kleur: '#C0392B',
+    voorbeelden: 'Private equity funds, opportunistische investeerders',
+    kernmotivatie: 'Hoog rendement in korte tot middellange termijn. Zoekt onderwaardering, transformeert, en verkoopt met winst.',
+    gedrag: 'Agressief, snel, data-driven. Hoog tempo in acquisitie en optimalisatie. Exit-strategie staat vanaf dag 1 vast.',
+    houding_gemeente: 'Kan een katalysator zijn bij transformatieopgaven. Maar belangen lopen niet altijd parallel met gemeentelijke doelen.',
+    valkuil: 'Kortetermijnfocus kan leiden tot snelle kwaliteitsverlaging of verwaarlozing na aankoop. Kan leegstand accepteren als hold-strategie.',
+    benadering: 'Wees duidelijk over gemeentelijke eisen en handhaving. Maak afspraken hard en juridisch geborgd. Benut hun slagkracht maar waak voor gebiedskwaliteit.'
+  },
+  {
+    id: 'REBEL',
+    naam: 'De Rebel',
+    type: 'Ondernemer-eigenaar (zakelijk)',
+    icoon: '⚡',
+    kleur: '#8E44AD',
+    voorbeelden: 'Zelfstandige vastgoedondernemers met zakelijke portefeuille',
+    kernmotivatie: 'Ondernemerschap en rendement. Combineert eigen gebruik met verhuur. Denkt in kansen en is bereid risico te nemen.',
+    gedrag: 'Hands-on, snel in besluitvorming. Pragmatisch en flexibel. Kan creatieve oplossingen bedenken die grote partijen niet zien.',
+    houding_gemeente: 'Kan een waardevolle partner zijn bij kleinschalige transformaties. Verwacht snelle procedures en weinig bureaucratie.',
+    valkuil: 'Kan regelgeving als hinderlijk ervaren en grenzen opzoeken. Niet altijd financieel robuust.',
+    benadering: 'Waardeer het ondernemerschap. Bied heldere kaders maar ook ruimte voor initiatief. Denk mee in oplossingen.'
+  },
+  {
+    id: 'NAIEVELING',
+    naam: 'De Na\u00efeveling',
+    type: 'Ondernemer-eigenaar (persoonlijk)',
+    icoon: '🌱',
+    kleur: '#27AE60',
+    voorbeelden: 'Particulieren die zakenpand kochten als belegging of erfenis',
+    kernmotivatie: 'Persoonlijk vermogensbeheer. Vaak emotioneel verbonden met het pand. Beperkte kennis van vastgoedmarkt en regelgeving.',
+    gedrag: 'Reactief, wacht af. Beperkte professionalisering. Beslissingen op gevoel. Vaak onzeker over investeringen.',
+    houding_gemeente: 'Heeft begeleiding nodig. Staat niet altijd open voor verandering maar is te bewegen met geduld en ondersteuning.',
+    valkuil: 'Kan door onkunde vastgoed laten verloederen. Bereikbaarheid is soms lastig. Kent rechten en plichten niet altijd.',
+    benadering: 'Benader persoonlijk en laagdrempelig. Bied concrete hulp: subsidie-informatie, procesbegeleiding, financieel advies. Vermijd jargon.'
+  },
+  {
+    id: 'VERNIEUWER',
+    naam: 'De Vernieuwer',
+    type: 'Particuliere investeerder (zakelijk)',
+    icoon: '🚀',
+    kleur: '#16A085',
+    voorbeelden: 'Vermogende particulieren met actieve beleggingsportefeuille',
+    kernmotivatie: 'Rendement met oog voor innovatie. Ziet vastgoed als onderdeel van bredere portefeuille. Open voor nieuwe concepten.',
+    gedrag: 'Ondernemend en alert. Volgt markttrends, bezoekt beurzen. Bereid te investeren in transformatie als het verdienmodel klopt.',
+    houding_gemeente: 'Kan een katalysator zijn voor vernieuwing. Verwacht professionele tegenpartij en duidelijk beleidskader.',
+    valkuil: 'Kan te optimistisch zijn over huurprijzen en waardering. Diversificeert soms te veel.',
+    benadering: 'Presenteer kansen helder met onderbouwde businesscase. Faciliteer met vergunningen en gebiedsvisie.'
+  },
+  {
+    id: 'ONSCHULDIGE',
+    naam: 'De Onschuldige',
+    type: 'Particuliere investeerder (persoonlijk)',
+    icoon: '🏡',
+    kleur: '#7FB3D8',
+    voorbeelden: 'Erfgenamen, gepensioneerden met vastgoed als pensioenvoorziening',
+    kernmotivatie: 'Zekerheid en inkomen. Vastgoed als appeltje voor de dorst. Wil minimaal risico en geen gedoe.',
+    gedrag: 'Passief, beheert op afstand. Minimale investeringen in onderhoud. Kiest voor laagste kosten, niet voor kwaliteit.',
+    houding_gemeente: 'Moeilijk te bereiken en te activeren. Heeft geen visie op gebiedsontwikkeling. Reageert pas bij problemen.',
+    valkuil: 'Grootste risico op verwaarlozing en achterstallig onderhoud. Kan leegstand langdurig laten voortduren.',
+    benadering: 'Proactief benaderen. Bied ontzorging: beheerondersteuning, subsidies, transformatiebegeleiding. Maak urgentie zichtbaar maar niet bedreigend.'
+  },
+  {
+    id: 'BEMIDDELAAR',
+    naam: 'De Bemiddelaar',
+    type: 'Gemeente (eigenaar/beheerder)',
+    icoon: '⚖️',
+    kleur: '#2C3E50',
+    voorbeelden: 'Gemeente als eigenaar van maatschappelijk vastgoed',
+    kernmotivatie: 'Publiek belang dienen. Vastgoed als instrument voor beleidsdoelen: huisvesting, voorzieningen, gebiedsontwikkeling.',
+    gedrag: 'Bestuurlijk gestuurd, ambtelijk uitgevoerd. Lange besluitvormingsprocessen. Moet verantwoording afleggen aan raad.',
+    houding_gemeente: 'Is zelf de gemeente. Kan voorbeeldfunctie vervullen maar moet ook zelf presteren op onderhoud en activering.',
+    valkuil: 'Eigen vastgoed wordt soms verwaarloosd. Politieke wisselingen kunnen continuiteit verstoren.',
+    benadering: 'Intern: zorg voor professioneel vastgoedmanagement. Extern: gebruik eigen vastgoed als katalysator voor gebiedsontwikkeling.'
+  },
+  {
+    id: 'REGISSEUR',
+    naam: 'De Regisseur',
+    type: 'Gemeente (ontwikkelaar)',
+    icoon: '🎬',
+    kleur: '#34495E',
+    voorbeelden: 'Gemeente in actieve ontwikkelrol bij transformatiegebieden',
+    kernmotivatie: 'Gebiedsontwikkeling realiseren. Gebruikt grondbeleid, bestemmingsplannen en publiek-private samenwerking als instrumenten.',
+    gedrag: 'Proactief en sturend. Combineert publiekrechtelijke instrumenten met privaatrechtelijke afspraken. Moet balanceren tussen belangen.',
+    houding_gemeente: 'Neemt de regie. Kan afspraken maken met eigenaren, ontwikkelaars en corporaties. Stuurt op gebiedsvisie.',
+    valkuil: 'Kan te veel hooi op de vork nemen. Financieel risico als grondexploitaties tegenvallen. Politieke gevoeligheid.',
+    benadering: 'Investeer in capaciteit en expertise. Werk met heldere gebiedsvisies en maak afspraken SMART. Betrek stakeholders vroeg.'
+  }
+];
+
+/**
+ * Get all vastgoed archetypen
+ * @returns {object[]} Array of archetypen
+ */
+function getAllArchetypen() {
+  return VASTGOED_ARCHETYPEN;
+}
+
+/**
+ * Get a specific archetype by ID
+ * @param {string} archetypeId - Archetype ID
+ * @returns {object|null} Archetype object or null
+ */
+function getArchetypeById(archetypeId) {
+  return VASTGOED_ARCHETYPEN.find(a => a.id === archetypeId) || null;
+}
+
+// ==========================================
 // EXPORTS
 // ==========================================
 
@@ -2431,6 +2613,7 @@ if (typeof module !== 'undefined' && module.exports) {
     COMMUNICATION_CHANNELS,
     COLLABORATION_RELATIONSHIP,
     ACTORS,
+    VASTGOED_ARCHETYPEN,
     getAllActors,
     getActorById,
     getActorsByCategory,
@@ -2440,7 +2623,9 @@ if (typeof module !== 'undefined' && module.exports) {
     getActorsForTopic,
     analyzeConflict,
     generateStakeholderMap,
-    getRiskProfile
+    getRiskProfile,
+    getAllArchetypen,
+    getArchetypeById
   };
 }
 
@@ -2452,6 +2637,7 @@ if (typeof window !== 'undefined') {
     COMMUNICATION_CHANNELS,
     COLLABORATION_RELATIONSHIP,
     ACTORS,
+    VASTGOED_ARCHETYPEN,
     getAllActors,
     getActorById,
     getActorsByCategory,
@@ -2461,6 +2647,8 @@ if (typeof window !== 'undefined') {
     getActorsForTopic,
     analyzeConflict,
     generateStakeholderMap,
-    getRiskProfile
+    getRiskProfile,
+    getAllArchetypen,
+    getArchetypeById
   };
 }

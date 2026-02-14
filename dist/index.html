@@ -1951,6 +1951,141 @@
       color: #f97316;
     }
 
+    /* Bijlage button */
+    .stakeholder-dialog__bijlage-btn {
+      padding: 6px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--color-surface-alt);
+      color: var(--color-text);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .stakeholder-dialog__bijlage-btn:hover {
+      border-color: var(--color-accent);
+      background: rgba(59, 130, 246, 0.06);
+    }
+    .stakeholder-dialog__bijlage-btn--active {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--color-accent);
+      color: var(--color-accent);
+    }
+
+    /* Archetypen bijlage */
+    .stakeholder-dialog__body--archetypen {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .archetypen-intro {
+      margin-bottom: 24px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(30, 58, 95, 0.06), rgba(41, 128, 185, 0.06));
+      border-radius: var(--radius);
+      border-left: 4px solid #1B3A5C;
+    }
+    .archetypen-intro__title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-text);
+      margin: 0 0 4px 0;
+    }
+    .archetypen-intro__subtitle {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      margin: 0 0 10px 0;
+      font-style: italic;
+    }
+    .archetypen-intro__text {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    .archetypen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .archetype-card {
+      background: var(--color-surface-alt);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .archetype-card:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+    }
+    .archetype-card--expanded {
+      grid-column: 1 / -1;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    }
+    .archetype-card__header {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .archetype-card__icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .archetype-card__title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.2;
+    }
+    .archetype-card__type {
+      font-size: 11px;
+      color: var(--color-text-muted);
+      margin-top: 2px;
+    }
+    .archetype-card__summary {
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.5;
+    }
+    .archetype-card__detail {
+      display: none;
+      padding: 0 16px 16px;
+    }
+    .archetype-card--expanded .archetype-card__detail {
+      display: block;
+    }
+    .archetype-card__section {
+      margin-bottom: 12px;
+    }
+    .archetype-card__section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--color-text-dim);
+      margin-bottom: 4px;
+    }
+    .archetype-card__section-text {
+      font-size: 12px;
+      color: var(--color-text-muted);
+      line-height: 1.6;
+    }
+
     /* Actor detail overlay */
     .actor-detail {
       grid-column: 1 / -1;
@@ -2525,9 +2660,22 @@ window.Launcher = Launcher;
         <option value="identiteit">Identiteit</option>
       </select>
       <span class="stakeholder-dialog__count" id="stakeholderCount">24 actoren</span>
+      <button class="stakeholder-dialog__bijlage-btn" id="archetypenToggle" onclick="toggleArchetypenView()" title="Bijlage: 12 Archetypen Vastgoedeigenaren (City Deal)">
+        📎 Archetypen Vastgoed
+      </button>
     </div>
     <div class="stakeholder-dialog__body" id="stakeholderDialogBody">
       <!-- Filled by JS -->
+    </div>
+    <div class="stakeholder-dialog__body stakeholder-dialog__body--archetypen" id="archetypenBody" style="display: none;">
+      <div class="archetypen-intro">
+        <h3 class="archetypen-intro__title">📎 Bijlage: Vastgoed Vertaald</h3>
+        <p class="archetypen-intro__subtitle">De 12 archetypische vastgoedeigenaren — City Deal Dynamische Binnensteden</p>
+        <p class="archetypen-intro__text">Elke binnenstad kent een mix van vastgoedeigenaren met uiteenlopende motivaties, gedragspatronen en houdingen ten opzichte van de gemeente. Hieronder vindt u de 12 archetypische profielen. Gebruik deze bij het voorbereiden van stakeholdergesprekken en het bepalen van uw benaderingsstrategie.</p>
+      </div>
+      <div class="archetypen-grid" id="archetypenGrid">
+        <!-- Filled by JS -->
+      </div>
     </div>
   </div>
 </div>
@@ -4708,12 +4856,109 @@ let stakeholderState = {
 };
 
 let stakeholderListenersAttached = false;
+let archetypenViewActive = false;
+let expandedArchetypeId = null;
+
+function toggleArchetypenView() {
+  archetypenViewActive = !archetypenViewActive;
+  const stakeholderBody = document.getElementById('stakeholderDialogBody');
+  const archetypenBody = document.getElementById('archetypenBody');
+  const toggleBtn = document.getElementById('archetypenToggle');
+
+  if (archetypenViewActive) {
+    stakeholderBody.style.display = 'none';
+    archetypenBody.style.display = 'block';
+    toggleBtn.classList.add('stakeholder-dialog__bijlage-btn--active');
+    toggleBtn.textContent = '👥 Terug naar Actoren';
+    renderArchetypenCards();
+  } else {
+    stakeholderBody.style.display = '';
+    archetypenBody.style.display = 'none';
+    toggleBtn.classList.remove('stakeholder-dialog__bijlage-btn--active');
+    toggleBtn.textContent = '📎 Archetypen Vastgoed';
+  }
+}
+
+function renderArchetypenCards() {
+  const SA = window.StakeholderActoren;
+  if (!SA || !SA.VASTGOED_ARCHETYPEN) return;
+
+  const grid = document.getElementById('archetypenGrid');
+  const archetypen = SA.VASTGOED_ARCHETYPEN;
+
+  let html = '';
+  archetypen.forEach(arch => {
+    const isExpanded = expandedArchetypeId === arch.id;
+    html += `
+      <div class="archetype-card ${isExpanded ? 'archetype-card--expanded' : ''}"
+           onclick="toggleArchetypeDetail('${arch.id}')"
+           data-archetype-id="${arch.id}">
+        <div class="archetype-card__header">
+          <div class="archetype-card__icon" style="background: ${arch.kleur};">
+            ${arch.icoon}
+          </div>
+          <div>
+            <div class="archetype-card__title">${arch.naam}</div>
+            <div class="archetype-card__type">${arch.type}</div>
+          </div>
+        </div>
+        <div class="archetype-card__summary">${arch.kernmotivatie}</div>
+        <div class="archetype-card__detail">
+          <div class="archetype-card__section">
+            <div class="archetype-card__section-title">Voorbeelden</div>
+            <div class="archetype-card__section-text">${arch.voorbeelden}</div>
+          </div>
+          <div class="archetype-card__section">
+            <div class="archetype-card__section-title">Gedrag</div>
+            <div class="archetype-card__section-text">${arch.gedrag}</div>
+          </div>
+          <div class="archetype-card__section">
+            <div class="archetype-card__section-title">Houding t.o.v. gemeente</div>
+            <div class="archetype-card__section-text">${arch.houding_gemeente}</div>
+          </div>
+          <div class="archetype-card__section">
+            <div class="archetype-card__section-title">⚠️ Valkuil</div>
+            <div class="archetype-card__section-text">${arch.valkuil}</div>
+          </div>
+          <div class="archetype-card__section">
+            <div class="archetype-card__section-title">💡 Benadering</div>
+            <div class="archetype-card__section-text">${arch.benadering}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function toggleArchetypeDetail(archetypeId) {
+  if (expandedArchetypeId === archetypeId) {
+    expandedArchetypeId = null;
+  } else {
+    expandedArchetypeId = archetypeId;
+  }
+  renderArchetypenCards();
+}
 
 function openStakeholderDialog() {
   const SA = window.StakeholderActoren;
   if (!SA || !SA.ACTORS) {
     console.error('StakeholderActoren module niet geladen');
     return;
+  }
+
+  // Reset archetypen view bij openen
+  archetypenViewActive = false;
+  expandedArchetypeId = null;
+  const stakeholderBody = document.getElementById('stakeholderDialogBody');
+  const archetypenBody = document.getElementById('archetypenBody');
+  const toggleBtn = document.getElementById('archetypenToggle');
+  if (stakeholderBody) stakeholderBody.style.display = '';
+  if (archetypenBody) archetypenBody.style.display = 'none';
+  if (toggleBtn) {
+    toggleBtn.classList.remove('stakeholder-dialog__bijlage-btn--active');
+    toggleBtn.textContent = '\u{1F4CE} Archetypen Vastgoed';
   }
 
   renderStakeholderCards();
