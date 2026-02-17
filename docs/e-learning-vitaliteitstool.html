@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Learning: Vitaliteitstool — Gebruikerstraining</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --primary-bg: #eff6ff;
+      --primary-bg-alt: #dbeafe;
+      --accent-green: #059669;
+      --accent-green-bg: #ecfdf5;
+      --accent-red: #dc2626;
+      --accent-red-bg: #fef2f2;
+      --accent-orange: #d97706;
+      --accent-orange-bg: #fffbeb;
+      --accent-purple: #7c3aed;
+      --accent-purple-bg: #f5f3ff;
+      --accent-teal: #0891b2;
+      --accent-teal-bg: #ecfeff;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --sidebar-width: 280px;
+      --header-height: 64px;
+      --font: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'Cascadia Code', 'Fira Code', monospace;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* === HEADER === */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: var(--header-height);
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(30, 64, 175, 0.3);
+    }
+
+    .header__brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header__logo {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .header__title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .header__subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+      font-weight: 400;
+    }
+
+    .header__progress {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header__progress-text {
+      font-size: 13px;
+      opacity: 0.9;
+      white-space: nowrap;
+    }
+
+    .header__progress-bar {
+      width: 180px;
+      height: 6px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .header__progress-fill {
+      height: 100%;
+      background: #60a5fa;
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    /* === LAYOUT === */
+    .layout {
+      display: flex;
+      margin-top: var(--header-height);
+      min-height: calc(100vh - var(--header-height));
+    }
+
+    /* === SIDEBAR === */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      top: var(--header-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 50;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+    }
+
+    .sidebar__section {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar__section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-light);
+      margin-bottom: 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      transition: all 0.15s ease;
+      margin-bottom: 2px;
+      border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+      background: var(--primary-bg);
+      color: var(--text);
+    }
+
+    .nav-item--active {
+      background: var(--primary-bg);
+      color: var(--primary);
+      font-weight: 600;
+      border-color: var(--primary-light);
+    }
+
+    .nav-item--completed {
+      color: var(--accent-green);
+    }
+
+    .nav-item__icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    .nav-item--active .nav-item__icon {
+      background: var(--primary);
+      color: white;
+    }
+
+    .nav-item--completed .nav-item__icon {
+      background: var(--accent-green);
+      color: white;
+    }
+
+    .nav-item__label {
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    /* === MAIN CONTENT === */
+    .main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 32px 40px 60px;
+      max-width: 900px;
+    }
+
+    /* === MODULE === */
+    .module {
+      display: none;
+    }
+
+    .module--active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .module__header {
+      margin-bottom: 28px;
+    }
+
+    .module__number {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .module__title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 8px;
+    }
+
+    .module__subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* === CONTENT BLOCKS === */
+    .content-block {
+      margin-bottom: 24px;
+    }
+
+    .content-block h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .content-block p {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    .content-block ul, .content-block ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    .content-block li {
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    /* === INFO BOXES === */
+    .info-box {
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+      border-left: 4px solid;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .info-box--blue {
+      background: var(--primary-bg);
+      border-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .info-box--green {
+      background: var(--accent-green-bg);
+      border-color: var(--accent-green);
+      color: #065f46;
+    }
+
+    .info-box--orange {
+      background: var(--accent-orange-bg);
+      border-color: var(--accent-orange);
+      color: #92400e;
+    }
+
+    .info-box--red {
+      background: var(--accent-red-bg);
+      border-color: var(--accent-red);
+      color: #991b1b;
+    }
+
+    .info-box--purple {
+      background: var(--accent-purple-bg);
+      border-color: var(--accent-purple);
+      color: #5b21b6;
+    }
+
+    .info-box--teal {
+      background: var(--accent-teal-bg);
+      border-color: var(--accent-teal);
+      color: #155e75;
+    }
+
+    .info-box__title {
+      font-weight: 700;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* === SCORE TABLE === */
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 13px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .score-table th {
+      background: var(--primary);
+      color: white;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .score-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .score-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .score-table tr:hover td {
+      background: var(--primary-bg);
+    }
+
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+    }
+
+    .score-badge--green { background: #dcfce7; color: #166534; }
+    .score-badge--yellow { background: #fef9c3; color: #854d0e; }
+    .score-badge--orange { background: #ffedd5; color: #9a3412; }
+    .score-badge--red { background: #fee2e2; color: #991b1b; }
+
+    /* === FEATURE GRID === */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      transition: all 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--primary-light);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    .feature-card__icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .feature-card__title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .feature-card__desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* === STEP INDICATOR === */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-bottom: 24px;
+    }
+
+    .step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+
+    .step__indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .step__number {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .step__line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      min-height: 20px;
+    }
+
+    .step:last-child .step__line { display: none; }
+
+    .step__content {
+      padding-bottom: 24px;
+      flex: 1;
+    }
+
+    .step__title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+
+    .step__desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* === KNOWLEDGE CHECK === */
+    .knowledge-check {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 28px 0;
+      box-shadow: var(--shadow-md);
+    }
+
+    .knowledge-check__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .knowledge-check__badge {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .knowledge-check__question {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .knowledge-check__options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .kc-option {
+      padding: 12px 16px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.5;
+      transition: all 0.15s ease;
+      background: var(--surface);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .kc-option:hover {
+      border-color: var(--primary-light);
+      background: var(--primary-bg);
+    }
+
+    .kc-option__marker {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: var(--text-muted);
+    }
+
+    .kc-option--correct {
+      border-color: var(--accent-green) !important;
+      background: var(--accent-green-bg) !important;
+    }
+
+    .kc-option--correct .kc-option__marker {
+      background: var(--accent-green);
+      border-color: var(--accent-green);
+      color: white;
+    }
+
+    .kc-option--wrong {
+      border-color: var(--accent-red) !important;
+      background: var(--accent-red-bg) !important;
+    }
+
+    .kc-option--wrong .kc-option__marker {
+      background: var(--accent-red);
+      border-color: var(--accent-red);
+      color: white;
+    }
+
+    .kc-option--disabled {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+
+    .knowledge-check__feedback {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .knowledge-check__feedback--correct {
+      background: var(--accent-green-bg);
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    .knowledge-check__feedback--wrong {
+      background: var(--accent-red-bg);
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    /* === DIMENSION VISUAL === */
+    .dimension-visual {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .dimension-visual__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .dim-row__label {
+      width: 140px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .dim-row__bar {
+      flex: 1;
+      height: 10px;
+      background: var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .dim-row__fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.6s ease;
+    }
+
+    .dim-row__fill--green { background: var(--accent-green); }
+    .dim-row__fill--red { background: var(--accent-red); }
+    .dim-row__fill--orange { background: var(--accent-orange); }
+    .dim-row__fill--blue { background: var(--primary-light); }
+    .dim-row__fill--teal { background: var(--accent-teal); }
+
+    .dim-row__value {
+      width: 40px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* === NAVIGATION BUTTONS === */
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn--primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 2px 4px rgba(30, 64, 175, 0.3);
+    }
+
+    .btn--primary:hover {
+      background: var(--primary-dark);
+      box-shadow: 0 4px 8px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn--secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn--secondary:hover {
+      background: var(--bg);
+      border-color: var(--primary-light);
+    }
+
+    /* === COMPLETION SCREEN === */
+    .completion {
+      text-align: center;
+      padding: 60px 40px;
+    }
+
+    .completion__icon {
+      font-size: 72px;
+      margin-bottom: 24px;
+    }
+
+    .completion__title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .completion__text {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 520px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+
+    .completion__stats {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 32px;
+    }
+
+    .completion__stat {
+      text-align: center;
+    }
+
+    .completion__stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      color: var(--primary);
+    }
+
+    .completion__stat-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* === STAKEHOLDER CARD === */
+    .stakeholder-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .stakeholder-card__header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .stakeholder-card__avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .stakeholder-card__name {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .stakeholder-card__category {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stakeholder-card__body {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-muted);
+    }
+
+    /* === BARRIER MODEL === */
+    .barrier-phase {
+      display: flex;
+      align-items: stretch;
+      margin-bottom: 8px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .barrier-phase__num {
+      width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .barrier-phase__content {
+      padding: 12px 16px;
+      flex: 1;
+      background: var(--surface);
+    }
+
+    .barrier-phase__name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .barrier-phase__desc {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* === KEYBOARD SHORTCUTS === */
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    /* === RESPONSIVE === */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 20px 60px; }
+      .header__progress-bar { width: 120px; }
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+
+    /* === PRINT === */
+    @media print {
+      .header, .sidebar, .nav-buttons { display: none; }
+      .main { margin: 0; max-width: 100%; }
+      .module { display: block !important; page-break-after: always; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header__brand">
+      <div class="header__logo">&#x1F3D8;</div>
+      <div>
+        <div class="header__title">E-Learning: Vitaliteitstool</div>
+        <div class="header__subtitle">Gebruikerstraining &mdash; City Deal Dynamische Binnensteden</div>
+      </div>
+    </div>
+    <div class="header__progress">
+      <span class="header__progress-text" id="progressText">Module 1 van 10</span>
+      <div class="header__progress-bar">
+        <div class="header__progress-fill" id="progressFill" style="width: 10%"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- LAYOUT -->
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar__section">
+        <div class="sidebar__section-title">Modules</div>
+        <div id="navList"></div>
+      </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main" id="mainContent">
+
+      <!-- MODULE 1: WELKOM -->
+      <section class="module module--active" data-module="0">
+        <div class="module__header">
+          <div class="module__number">Module 1</div>
+          <h1 class="module__title">Welkom bij de Vitaliteitstool</h1>
+          <p class="module__subtitle">Wat is de Vitaliteitstool, waarvoor gebruik je hem, en hoe past hij in de City Deal Dynamische Binnensteden?</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Wat is de Vitaliteitstool?</h3>
+          <p>De Vitaliteitstool is een analyseprogramma waarmee je de vitaliteit van binnensteden en winkelgebieden in kaart brengt. De tool combineert data uit maximaal 27 verschillende bronnen&mdash;van het Locatus-bedrijvenregister en KvK tot CBS-demografiegegevens en politiecijfers&mdash;tot &eacute;&eacute;n integraal beeld per locatie, straat of buurt.</p>
+          <p>Het programma draait volledig in je browser, binnen een beveiligde Tauri-desktop applicatie. Geen data verlaat je werkstation: alles wordt lokaal verwerkt, geanalyseerd en gevisualiseerd.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Waar komt de tool vandaan?</h3>
+          <p>De Vitaliteitstool is ontwikkeld in het kader van de <strong>City Deal Dynamische Binnensteden</strong>, een samenwerkingsverband van het Ministerie van BZK, gemeenten en kennisinstellingen. Het doel: binnensteden toekomstbestendig maken door data-gedreven inzichten te combineren met bestuurlijke slagkracht.</p>
+        </div>
+
+        <div class="info-box info-box--blue">
+          <div class="info-box__title">&#x1F4A1; Kernprincipes</div>
+          De Vitaliteitstool werkt met twee hoofddimensies: <strong>Kwaliteit</strong> (wat draagt een onderneming bij aan de leefbaarheid?) en <strong>Kwetsbaarheid</strong> (hoe vatbaar is een branche voor ondermijnende criminaliteit?). Door deze twee dimensies samen te analyseren ontstaat een uniek beeld van gebiedsvitaliteit.
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--primary-bg); color: var(--primary);">&#x1F5FA;</div>
+            <div class="feature-card__title">Kaartvisualisatie</div>
+            <div class="feature-card__desc">Interactieve kaart met kleurcodering per locatie op basis van vitaliteitsscores.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-green-bg); color: var(--accent-green);">&#x1F4CA;</div>
+            <div class="feature-card__title">50+ Brancheclassificaties</div>
+            <div class="feature-card__desc">Elke branche is beoordeeld op kwaliteit &eacute;n kwetsbaarheid op basis van wetenschappelijk onderzoek.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-orange-bg); color: var(--accent-orange);">&#x1F465;</div>
+            <div class="feature-card__title">24 Stakeholderprofielen</div>
+            <div class="feature-card__desc">Complete communicatiegids per actortype, van winkelier tot wethouder.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-purple-bg); color: var(--accent-purple);">&#x1F512;</div>
+            <div class="feature-card__title">Lokaal &amp; Beveiligd</div>
+            <div class="feature-card__desc">Geen cloud, geen externe servers. Data blijft op je werkstation met 2FA-bescherming.</div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Twee versies</h3>
+          <p>Er zijn twee varianten van de Vitaliteitstool:</p>
+          <ul>
+            <li><strong>Analyseprogramma</strong> &mdash; De volledige versie waarmee je datasets importeert, analyseert en bewerkt. Dit is de versie die je als primaire gebruiker gebruikt.</li>
+            <li><strong>Leesprogramma (Reader)</strong> &mdash; Een alleen-lezen versie waarmee collega&apos;s en stakeholders de analyses kunnen bekijken zonder data te kunnen wijzigen of importeren.</li>
+          </ul>
+        </div>
+
+        <div class="info-box info-box--green">
+          <div class="info-box__title">&#x2705; Leerdoel</div>
+          Na deze e-learning kun je zelfstandig data importeren, gebieden analyseren op kwaliteit en kwetsbaarheid, branchescores interpreteren, stakeholderprofielen raadplegen en gerichte conclusies trekken over de vitaliteit van een binnenstad.
+        </div>
+      </section>
+
+      <!-- MODULE 2: INTERFACE & NAVIGATIE -->
+      <section class="module" data-module="1">
+        <div class="module__header">
+          <div class="module__number">Module 2</div>
+          <h1 class="module__title">Interface &amp; Navigatie</h1>
+          <p class="module__subtitle">De indeling van het scherm, panelen en bediening van de Vitaliteitstool.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Schermindeling</h3>
+          <p>De Vitaliteitstool heeft een driedelig scherm:</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--primary-bg); color: var(--primary);">&#x2B05;</div>
+            <div class="feature-card__title">Zijpaneel (links)</div>
+            <div class="feature-card__desc">Filters, dimensiegewichten, branchelijst en gebiedsselectie. Hier bepaal je <em>wat</em> je ziet op de kaart.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-green-bg); color: var(--accent-green);">&#x1F5FA;</div>
+            <div class="feature-card__title">Kaart (midden)</div>
+            <div class="feature-card__desc">Interactieve Leaflet-kaart met kleurmarkeringen per locatie. Klik op een punt voor details.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-orange-bg); color: var(--accent-orange);">&#x27A1;</div>
+            <div class="feature-card__title">Detailpaneel (rechts)</div>
+            <div class="feature-card__desc">Verschijnt wanneer je een locatie selecteert. Toont scores, dimensies, radar chart en branche-informatie.</div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Header</h3>
+          <p>De bovenste balk bevat het logo, de applicatienaam en rechts de actieknoppen: importeren, brancheoverzicht, thema-wissel (licht/donker) en accountinstellingen. De tool ondersteunt een <strong>donker thema</strong> dat prettig werkt bij langdurig gebruik.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Zijpaneel in detail</h3>
+          <p>Het zijpaneel is opgedeeld in secties:</p>
+          <ul>
+            <li><strong>Dimensiegewichten</strong> &mdash; Schuifbalken waarmee je het relatieve belang van kwaliteit, kwetsbaarheid en andere dimensies instelt. Dit be&iuml;nvloedt direct de score en kleur op de kaart.</li>
+            <li><strong>Filters</strong> &mdash; Selecteer op scorebereik, branche, kwaliteitstags, kwetsbaarheidstypen, gelegenheidsstructuren en meer. Het aantal actieve filters wordt getoond met een badge.</li>
+            <li><strong>Branchelijst</strong> &mdash; Scrollbare lijst met alle branches in het geladen gebied, gesorteerd op score. Klik op een branche om die op de kaart te highlighten.</li>
+            <li><strong>Datastatus</strong> &mdash; Toont welke datasets zijn geladen en hoeveel records beschikbaar zijn.</li>
+          </ul>
+        </div>
+
+        <div class="content-block">
+          <h3>Detailpaneel</h3>
+          <p>Wanneer je op een locatie op de kaart klikt, opent rechts het detailpaneel. Dit toont:</p>
+          <ul>
+            <li>Naam en adres van de onderneming</li>
+            <li>Brancheclassificatie met kwaliteits- en kwetsbaarheidsscore</li>
+            <li>Radar chart met alle dimensies</li>
+            <li>Score-uitleg met formule en gewogen bijdragen</li>
+            <li>Eventuele monocultuurwaarschuwingen</li>
+            <li>Beschikbare actieperspectieven (BIBOB-screening, monitoring, handhaving)</li>
+          </ul>
+        </div>
+
+        <div class="info-box info-box--blue">
+          <div class="info-box__title">&#x2328; Sneltoetsen</div>
+          Gebruik <kbd>D</kbd> voor donker thema, <kbd>F</kbd> om het filterpaneel te openen, en <kbd>Esc</kbd> om dialoogvensters te sluiten.
+        </div>
+
+        <!-- KC 1 -->
+        <div class="knowledge-check" data-kc="0">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Waar stel je de relatieve weging van kwaliteit en kwetsbaarheid in?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>In het detailpaneel rechts</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">B</span><span>Bij de dimensiegewichten in het zijpaneel links</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">C</span><span>Via de header bovenin</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>In het importdialoogvenster</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! De dimensiegewichten in het zijpaneel bepalen hoe zwaar kwaliteit, kwetsbaarheid en andere dimensies meewegen in de totaalscore. Wijzig je de schuifbalken, dan verandert direct de kleurcodering op de kaart.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet helemaal. De dimensiegewichten staan in het zijpaneel links. Daar stel je met schuifbalken in hoe zwaar elke dimensie meetelt in de totaalscore.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 3: DATA IMPORTEREN -->
+      <section class="module" data-module="2">
+        <div class="module__header">
+          <div class="module__number">Module 3</div>
+          <h1 class="module__title">Data Importeren</h1>
+          <p class="module__subtitle">Hoe laad je datasets, koppel je kolommen en valideer je de import?</p>
+        </div>
+
+        <div class="content-block">
+          <h3>27 datasets, drie categorie&euml;n</h3>
+          <p>De Vitaliteitstool werkt met maximaal 27 datasets, onderverdeeld in drie categorie&euml;n:</p>
+        </div>
+
+        <div class="score-table">
+          <thead>
+            <tr>
+              <th>Categorie</th>
+              <th>Voorbeelden</th>
+              <th>Beschikbaarheid</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Extern</strong></td>
+              <td>Locatus Online, KvK Register, CBS Demografie</td>
+              <td>Wordt aangeleverd door externe partijen</td>
+            </tr>
+            <tr>
+              <td><strong>Intern gemeentelijk</strong></td>
+              <td>Leegstand, Vergunningen, Handhaving, Meldingen Ondermijning, BRP</td>
+              <td>Vanuit gemeentelijke administratie</td>
+            </tr>
+            <tr>
+              <td><strong>Ingebed</strong></td>
+              <td>Branchekwalificaties, Kwetsbaarheidstabel, Omgevingsrisicomodel (CCV)</td>
+              <td>Automatisch beschikbaar in de tool</td>
+            </tr>
+          </tbody>
+        </div>
+
+        <div class="content-block">
+          <h3>Importproces stap voor stap</h3>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">1</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Open het importdialoog</div>
+              <div class="step__desc">Klik op de importknop in de header. Het importvenster toont alle 27 datasets, gegroepeerd per categorie, met per dataset de status (wachtend, geladen, fout).</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">2</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Selecteer een Excel-bestand</div>
+              <div class="step__desc">Klik op de uploadzone bij de gewenste dataset of sleep een .xlsx-bestand naar de zone. De tool herkent de kolomnamen automatisch.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">3</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Kolomkoppeling controleren</div>
+              <div class="step__desc">De tool toont een mapping-interface: links de verwachte velden, rechts de gevonden kolommen in jouw bestand. Verplichte velden zijn rood gemarkeerd, optionele velden paars. Controleer of de automatische koppeling klopt en corrigeer waar nodig.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">4</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Validatie en verwerking</div>
+              <div class="step__desc">Na bevestiging valideert de tool elke rij. Ongeldige rijen worden gerapporteerd. Geldige data wordt gekoppeld aan het geografische model via postcodes (PC6, PC5, PC4), straat of buurt.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">5</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Resultaat op de kaart</div>
+              <div class="step__desc">Zodra de import is verwerkt, verschijnen de locaties op de kaart. De datastatus in het zijpaneel toont hoeveel records succesvol zijn geladen.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box info-box--orange">
+          <div class="info-box__title">&#x26A0; Gevoelige datasets</div>
+          Sommige datasets zijn gemarkeerd als <strong>SENSITIVE</strong> en vereisen een DPIA (Data Protection Impact Assessment). Dit betreft onder andere: Meldingen Ondermijning, Prostitutiecontroles, Openbare Orde Camera&apos;s en Huisverboden. Importeer deze datasets alleen als je daartoe bevoegd bent en een geldige DPIA beschikbaar is.
+        </div>
+
+        <div class="content-block">
+          <h3>De koppelsleutel: PC6</h3>
+          <p>Het fundament van de Vitaliteitstool is de <strong>PC6-postcode</strong> (6-positie postcode, bijv. &quot;5038EA&quot;). Dit is de primaire sleutel waarmee alle datasets aan elkaar worden gekoppeld. Zorg er altijd voor dat je datasets een geldige PC6-kolom bevatten.</p>
+          <p>Daarnaast ondersteunt de tool koppelingen via PC5, PC4, straatnaam en buurtnaam&mdash;maar PC6 is de meest precieze en daarom de voorkeursmethode.</p>
+        </div>
+
+        <div class="info-box info-box--teal">
+          <div class="info-box__title">&#x1F4CB; Basis vs. Optioneel</div>
+          De dataset <strong>Locatus Online</strong> is verplicht (BASE)&mdash;zonder deze dataset werkt de tool niet. Alle overige datasets zijn optioneel en verrijken het beeld. Hoe meer datasets je laadt, hoe completer de analyse.
+        </div>
+
+        <!-- KC 2 -->
+        <div class="knowledge-check" data-kc="1">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Welke dataset is verplicht om de Vitaliteitstool te laten functioneren?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>KvK Register</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">B</span><span>CBS Demografie</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">C</span><span>Locatus Online</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Meldingen Ondermijning</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Locatus Online is de enige verplichte (BASE) dataset. Deze bevat het basisregister met ondernemingsgegevens, classificaties en PC6-postcodekoppelingen waarop de rest van de tool draait.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Locatus Online is de enige verplichte dataset (status: BASE). Zonder dit basisregister kan de tool geen locaties op de kaart plaatsen.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 4: BRANCHECLASSIFICATIE -->
+      <section class="module" data-module="3">
+        <div class="module__header">
+          <div class="module__number">Module 4</div>
+          <h1 class="module__title">Brancheclassificatie</h1>
+          <p class="module__subtitle">Hoe werkt het scoringsmodel per branche? Kwaliteit versus kwetsbaarheid uitgelegd.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Twee scores per branche</h3>
+          <p>Elke branche in de Vitaliteitstool heeft twee scores op een schaal van 1 tot 10:</p>
+          <ul>
+            <li><strong style="color: var(--accent-green);">Kwaliteitsscore</strong> &mdash; Hoe groot is de bijdrage van deze branche aan de vitaliteit van het gebied? Een score van 10 betekent maximale bijdrage (denk aan een supermarkt in een woonwijk), een score van 1 betekent geen bijdrage.</li>
+            <li><strong style="color: var(--accent-red);">Kwetsbaarheidsscore</strong> &mdash; Hoe vatbaar is deze branche voor ondermijnende criminaliteit? Een score van 10 betekent zeer kwetsbaar (contant-geld intensief, lage toetredingsdrempel, ondoorzichtige omzet), een score van 1 betekent nauwelijks kwetsbaar.</li>
+          </ul>
+        </div>
+
+        <div class="dimension-visual">
+          <div class="dimension-visual__title">Voorbeelden branchescores</div>
+          <div class="dim-row">
+            <div class="dim-row__label">Supermarkt</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--green" style="width: 90%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-green);">K: 9</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Supermarkt</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--red" style="width: 20%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-red);">V: 2</div>
+          </div>
+          <div style="height: 12px;"></div>
+          <div class="dim-row">
+            <div class="dim-row__label">Belwinkel</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--green" style="width: 20%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-green);">K: 2</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Belwinkel</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--red" style="width: 80%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-red);">V: 8</div>
+          </div>
+          <div style="height: 12px;"></div>
+          <div class="dim-row">
+            <div class="dim-row__label">Leegstand</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--green" style="width: 10%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-green);">K: 1</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Leegstand</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--red" style="width: 50%"></div></div>
+            <div class="dim-row__value" style="color: var(--accent-red);">V: 5</div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Wetenschappelijke onderbouwing</h3>
+          <p>De scores zijn niet zomaar bedacht. Ze zijn gebaseerd op meerdere bronnen:</p>
+          <ul>
+            <li><strong>Kwaliteitsscores:</strong> Vitaliteitsbenchmark Centrumgebieden (Goudappel), City Deal Dynamische Binnensteden, Platform31 onderzoek, CBS/PBL analyses detailhandel.</li>
+            <li><strong>Kwetsbaarheidsscores:</strong> RIEC/LIEC jaarverslagen, Wet Bibob toepassingspraktijk, Onderzoek Politie &amp; Wetenschap (Mehlbaum et al.), Kamerbrieven kwetsbare branches (Minister JenV).</li>
+          </ul>
+        </div>
+
+        <div class="content-block">
+          <h3>15 kwaliteitstags</h3>
+          <p>Naast de numerieke score krijgt elke branche tags die beschrijven <em>hoe</em> zij bijdraagt aan vitaliteit. Voorbeelden: <code>toerisme</code>, <code>dagelijkse_behoeften</code>, <code>werkgelegenheid</code>, <code>passantenflow</code>, <code>sociale_cohesie</code>, <code>ankerfunctie</code>. Met deze tags kun je filteren op specifieke typen bijdragen.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>12 kwetsbaarheidstypen</h3>
+          <p>Elke kwetsbare branche is verder gespecificeerd met risicotypen:</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card__title" style="color: var(--accent-red);">Financieel</div>
+            <div class="feature-card__desc">Witwassen, belastingfraude, ondoorzichtige omzet, contant-geld intensief</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title" style="color: var(--accent-red);">Mensenhandel &amp; uitbuiting</div>
+            <div class="feature-card__desc">Mensenhandel, arbeidsuitbuiting, uitbuiting</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title" style="color: var(--accent-red);">Crimineel</div>
+            <div class="feature-card__desc">Drugshandel, illegaal gokken, heling</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title" style="color: var(--accent-red);">Structureel</div>
+            <div class="feature-card__desc">Dekmantelonderneming, lage toetredingsdrempel</div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Brancheoverzicht openen</h3>
+          <p>Via de knop &quot;Brancheoverzicht&quot; in de header open je een volledig doorzoekbaar overzicht van alle 50+ brancheclassificaties. Je kunt zoeken op naam, filteren op groep en sorteren op kwaliteits- of kwetsbaarheidsscore. Klik op een branche voor de volledige details: scores, tags, actieperspectief en&mdash;als er data is geladen&mdash;het aantal voorkomens in jouw gebied.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Actieperspectief</h3>
+          <p>Per branche beveelt de tool een <strong>actieperspectief</strong> aan: BIBOB-screening, monitoring, handhaving, samenwerking, vergunningplicht, controle, of geen actie nodig. Dit helpt bij het prioriteren van je werkzaamheden.</p>
+        </div>
+
+        <!-- KC 3 -->
+        <div class="knowledge-check" data-kc="2">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Een branche met een kwaliteitsscore van 8 en een kwetsbaarheidsscore van 3 is het beste omschreven als:</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Problematisch: de scores zijn tegenstrijdig en moeten onderzocht worden</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">B</span><span>Waardevol: hoge bijdrage aan vitaliteit met beperkt ondermijningsrisico</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">C</span><span>Risicovol: de hoge kwaliteitsscore verbergt onderliggende kwetsbaarheid</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Neutraal: de scores heffen elkaar op tot een gemiddelde vitaliteit</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Hoge kwaliteit (8) betekent grote bijdrage aan de leefbaarheid. Lage kwetsbaarheid (3) betekent beperkt risico op ondermijning. Dit is het ideale profiel&mdash;waardevolle ondernemingen die het gebied versterken.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Kwaliteit en kwetsbaarheid zijn twee onafhankelijke dimensies. Hoge kwaliteit (8) = waardvol voor het gebied. Lage kwetsbaarheid (3) = beperkt risico. Samen is dat het meest gewenste profiel.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 5: KAART & FILTERS -->
+      <section class="module" data-module="4">
+        <div class="module__header">
+          <div class="module__number">Module 5</div>
+          <h1 class="module__title">Kaart &amp; Filters</h1>
+          <p class="module__subtitle">De interactieve kaart effectief gebruiken: kleurcodes, filters en monocultuurdetectie.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Kleurcodes op de kaart</h3>
+          <p>Elke locatie op de kaart krijgt een kleurmarkering op basis van de gewogen totaalscore:</p>
+        </div>
+
+        <div class="score-table">
+          <thead>
+            <tr>
+              <th>Kleur</th>
+              <th>Categorie</th>
+              <th>Score</th>
+              <th>Betekenis</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="score-badge score-badge--green">&#x2B24;</span></td>
+              <td><strong>Vitaal</strong></td>
+              <td>7.0 &ndash; 10.0</td>
+              <td>Gezonde locatie met hoge vitaliteit</td>
+            </tr>
+            <tr>
+              <td><span class="score-badge score-badge--yellow">&#x2B24;</span></td>
+              <td><strong>Aandacht</strong></td>
+              <td>5.0 &ndash; 6.9</td>
+              <td>Gemiddeld; monitoring aanbevolen</td>
+            </tr>
+            <tr>
+              <td><span class="score-badge score-badge--orange">&#x2B24;</span></td>
+              <td><strong>Zorgelijk</strong></td>
+              <td>3.0 &ndash; 4.9</td>
+              <td>Onder de maat; actie gewenst</td>
+            </tr>
+            <tr>
+              <td><span class="score-badge score-badge--red">&#x2B24;</span></td>
+              <td><strong>Kritiek</strong></td>
+              <td>1.0 &ndash; 2.9</td>
+              <td>Ernstig risico; directe interventie</td>
+            </tr>
+          </tbody>
+        </div>
+
+        <div class="content-block">
+          <h3>Filteren</h3>
+          <p>Het filterpaneel in het zijpaneel biedt meerdere filtermogelijkheden die je kunt combineren:</p>
+          <ul>
+            <li><strong>Scorebereik</strong> &mdash; Stel een minimum en maximum in voor kwaliteit en/of kwetsbaarheid.</li>
+            <li><strong>Brancheselectie</strong> &mdash; Filter op &eacute;&eacute;n of meerdere branches om alleen die locaties te tonen.</li>
+            <li><strong>Kwaliteitstags</strong> &mdash; Selecteer tags als &quot;toerisme&quot; of &quot;ankerfunctie&quot; om gericht te zoeken.</li>
+            <li><strong>Kwetsbaarheidstypen</strong> &mdash; Filter op specifieke risicotypen zoals witwassen of arbeidsuitbuiting.</li>
+            <li><strong>Gelegenheidsstructuren</strong> &mdash; Filter op criminogene factoren uit het JenV-kader.</li>
+            <li><strong>Toggle-filters</strong> &mdash; Aan/uit filters voor specifieke condities.</li>
+          </ul>
+          <p>Het aantal actieve filters wordt weergegeven als badge. Gebruik &quot;Wis filters&quot; om alles te resetten.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Branche-highlight</h3>
+          <p>Als je in de branchelijst op een branche klikt, worden alle locaties van die branche op de kaart gemarkeerd met een pulserend effect. Bovenaan de kaart verschijnt een banner met het aantal gevonden locaties. Dit is ideaal om snel te zien waar bijvoorbeeld alle kappers, belwinkels of leegstaande panden zich bevinden.</p>
+        </div>
+
+        <div class="info-box info-box--orange">
+          <div class="info-box__title">&#x26A0; Monocultuurdetectie</div>
+          De tool detecteert automatisch <strong>monoculturen</strong>: gebieden waar &eacute;&eacute;n branche oververtegenwoordigd is. Een overconcentratie van bijvoorbeeld kappers of nagelstudio&apos;s kan wijzen op ondermijning. De tool toont monocultuurwaarschuwingen als oranje banners in het zijpaneel en het detailpaneel.
+        </div>
+
+        <!-- KC 4 -->
+        <div class="knowledge-check" data-kc="3">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Wat kan monocultuurdetectie in de Vitaliteitstool signaleren?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Dat er te veel woningen in een binnenstad zijn</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">B</span><span>Dat de kaartdata niet correct is ge&iuml;mporteerd</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">C</span><span>Dat &eacute;&eacute;n branche oververtegenwoordigd is in een gebied, wat kan wijzen op ondermijning</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Dat alle ondernemingen in een straat dezelfde eigenaar hebben</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Monocultuurdetectie signaleert een oververtegenwoordiging van &eacute;&eacute;n branche (bijv. veel kappers of nagelstudio&apos;s in een klein gebied). Dit kan een indicator zijn voor ondermijnende activiteiten, zoals witwassen via contant-geld intensieve bedrijven.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Monocultuurdetectie gaat over de brancheverdeling: als &eacute;&eacute;n branche oververtegenwoordigd is in een gebied, kan dat wijzen op ondermijning. Denk aan een cluster van belwinkels, kappers of nagelstudio&apos;s.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 6: SCORES & BEREKENINGEN -->
+      <section class="module" data-module="5">
+        <div class="module__header">
+          <div class="module__number">Module 6</div>
+          <h1 class="module__title">Scores &amp; Berekeningen</h1>
+          <p class="module__subtitle">Hoe berekent de Vitaliteitstool de totaalscore per locatie? Dimensies, gewichten en de scoreformule.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Multidimensionale scoring</h3>
+          <p>De totaalscore per locatie is niet &eacute;&eacute;n enkel getal, maar een <strong>gewogen combinatie</strong> van meerdere dimensies. Je kunt de gewichten zelf instellen via de schuifbalken in het zijpaneel. De belangrijkste dimensies zijn:</p>
+        </div>
+
+        <div class="dimension-visual">
+          <div class="dimension-visual__title">Scoredimensies (voorbeeld standaardinstelling)</div>
+          <div class="dim-row">
+            <div class="dim-row__label">Kwaliteit</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--green" style="width: 40%"></div></div>
+            <div class="dim-row__value">40%</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Kwetsbaarheid</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--red" style="width: 30%"></div></div>
+            <div class="dim-row__value">30%</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Gelegenheid</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--orange" style="width: 15%"></div></div>
+            <div class="dim-row__value">15%</div>
+          </div>
+          <div class="dim-row">
+            <div class="dim-row__label">Omgeving (CCV)</div>
+            <div class="dim-row__bar"><div class="dim-row__fill dim-row__fill--teal" style="width: 15%"></div></div>
+            <div class="dim-row__value">15%</div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Score-uitleg per locatie</h3>
+          <p>Bij elke locatie in het detailpaneel kun je de &quot;Score-uitleg&quot; openvouwen. Deze toont:</p>
+          <ul>
+            <li>De formule die is gebruikt voor de berekening</li>
+            <li>De bijdrage van elke dimensie (score &times; gewicht = gewogen bijdrage)</li>
+            <li>De totaalscore met kleurcodering</li>
+            <li>Bronvermelding: welke datasets hebben bijgedragen aan de score</li>
+          </ul>
+        </div>
+
+        <div class="content-block">
+          <h3>Gelegenheidsstructuren (JenV-kader)</h3>
+          <p>Het Ministerie van Justitie en Veiligheid hanteert een model van <strong>criminogene gelegenheidsstructuren</strong>. De Vitaliteitstool maakt onderscheid tussen:</p>
+          <ul>
+            <li><strong>Situationele factoren</strong> &mdash; Cashflow-ondoorzichtigheid, lage toetredingsdrempel, zwakke administratie, anonieme klanten, flexibele prijszetting, seizoenspatronen, ruime openingstijden, grensoverschrijdend, complexe toeleveringsketen.</li>
+            <li><strong>Sociale factoren</strong> &mdash; Gesloten gemeenschap, familienetwerken, informele economie, arbeidsafhankelijkheid, vertrouwensmisbruik.</li>
+          </ul>
+        </div>
+
+        <div class="content-block">
+          <h3>Omgevingsrisico&apos;s (CCV-model)</h3>
+          <p>Op basis van het CCV-platform (Centrum voor Criminaliteitspreventie en Veiligheid) en CPTED-principes worden 18 omgevingsfactoren beoordeeld. Deze zijn verdeeld over vier groepen:</p>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card__title">Ruimtelijk</div>
+            <div class="feature-card__desc">Zichtbaarheid, verlichting, vluchtroutes, verborgen ruimtes, onderhoud</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title">Sociale controle</div>
+            <div class="feature-card__desc">Passantenfrequentie, anonimiteit, wisselende bevolking</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title">Functioneel</div>
+            <div class="feature-card__desc">Monofunctionaliteit, woonfunctie, leegstandsclusters, functiemix</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__title">Toegankelijkheid</div>
+            <div class="feature-card__desc">Nabijheid snelweg, grens, vervoersknooppunt, verborgen parkeerplaats</div>
+          </div>
+        </div>
+
+        <!-- KC 5 -->
+        <div class="knowledge-check" data-kc="4">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Als je het gewicht van &quot;Kwetsbaarheid&quot; verhoogt van 30% naar 50%, wat gebeurt er dan op de kaart?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Er verschijnen meer locaties op de kaart</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">B</span><span>Locaties met hoge kwetsbaarheid worden roder; de kwetsbaarheid weegt nu zwaarder in de totaalscore</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">C</span><span>De kwaliteitsscores worden automatisch verlaagd</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>De tool herberekent alleen de geselecteerde locatie</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! De gewichten bepalen hoeveel elke dimensie bijdraagt aan de totaalscore. Door kwetsbaarheid zwaarder te wegen, verschuift het kleurbeeld op de kaart: locaties met hoge kwetsbaarheid scoren nu slechter in de totaalscore en worden roder gekleurd.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Gewichten be&iuml;nvloeden de totaalscore: als kwetsbaarheid zwaarder weegt, telt het ondermijningsrisico meer mee. De kaart herberekent alle locaties en de kleurcodering verschuift mee.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 7: BARRIÈREMODEL -->
+      <section class="module" data-module="6">
+        <div class="module__header">
+          <div class="module__number">Module 7</div>
+          <h1 class="module__title">Het Barri&egrave;remodel</h1>
+          <p class="module__subtitle">Het CCV-barri&egrave;remodel: zes fasen van het crimineel proces en hoe je per fase kunt interveni&euml;ren.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Wat is het barri&egrave;remodel?</h3>
+          <p>Het barri&egrave;remodel is een methodiek van het CCV (Centrum voor Criminaliteitspreventie en Veiligheid) dat het criminele proces opdeelt in zes opeenvolgende fasen. Per fase zijn er signalen die je kunt herkennen, en barri&egrave;res die je kunt opwerpen om het proces te verstoren.</p>
+          <p>De Vitaliteitstool koppelt per branche de relevante fasen en signalen, zodat je gericht weet waar je moet kijken.</p>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #3b82f6;">1</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Voorbereiding</div>
+            <div class="barrier-phase__desc">Ori&euml;ntatie en planning: onverklaarbare financieringsbronnen, katvanger-registraties, geen branche-ervaring, onduidelijk ondernemingsplan.</div>
+          </div>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #6366f1;">2</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Vestiging</div>
+            <div class="barrier-phase__desc">Opzetten van de onderneming: overname tegen afwijkende prijs, snelle eigenaarswisseling (&lt;12 mnd), ongebruikelijk hoge huur, onverklaarbare verbouwingskosten.</div>
+          </div>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #8b5cf6;">3</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Operationele fase</div>
+            <div class="barrier-phase__desc">Dagelijkse bedrijfsvoering: omzet inconsistent met klantenstroom, afwijkende openingstijden, ongebruikelijk personeelsbestand, contante transacties boven verwachting.</div>
+          </div>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #a855f7;">4</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Geldaccumulatie</div>
+            <div class="barrier-phase__desc">Ophoping van criminele opbrengsten: grote contante stortingen, omzetcijfers inconsistent met branchegemiddelde, meerdere bankrekeningen, onverklaarbare vermogensgroei.</div>
+          </div>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #c084fc;">5</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Verhulling</div>
+            <div class="barrier-phase__desc">Verbergen van criminele herkomst: complexe bedrijfsstructuren, buitenlandse rechtspersonen, ABC-transacties, ongebruikelijke handelspatronen.</div>
+          </div>
+        </div>
+
+        <div class="barrier-phase">
+          <div class="barrier-phase__num" style="background: #d8b4fe;">6</div>
+          <div class="barrier-phase__content">
+            <div class="barrier-phase__name">Integratie</div>
+            <div class="barrier-phase__desc">Investeren van witgewassen geld in legale economie: vastgoedaankopen, bedrijfsovernames, luxe aankopen als &quot;regulier inkomen&quot;.</div>
+          </div>
+        </div>
+
+        <div class="info-box info-box--purple">
+          <div class="info-box__title">&#x1F4A1; Toepassing in de tool</div>
+          De Vitaliteitstool koppelt per branche welke fasen van het barri&egrave;remodel het meest relevant zijn. Zo weet je bij een sisha lounge dat de operationele fase (contante betalingen, afwijkende openingstijden) en de accumulatiefase (hoge omzet met weinig zichtbare klanten) de aandachtspunten zijn.
+        </div>
+
+        <!-- KC 6 -->
+        <div class="knowledge-check" data-kc="5">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">In welke fase van het barri&egrave;remodel valt het signaal &quot;snelle eigenaarswisseling binnen 12 maanden&quot;?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Voorbereiding</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">B</span><span>Vestiging</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">C</span><span>Operationele fase</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Verhulling</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Een snelle eigenaarswisseling is een signaal uit de vestigingsfase. Het kan erop wijzen dat een pand snel van hand wisselt om de werkelijke eigendomsstructuur te verdoezelen of om snel een dekmantelonderneming op te zetten.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Dit signaal hoort bij de vestigingsfase (fase 2): het opzetten van de onderneming. Snelle eigenaarswisseling, overname tegen afwijkende prijs en onverklaarbare verbouwingskosten zijn allemaal vestigingssignalen.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 8: STAKEHOLDERS -->
+      <section class="module" data-module="7">
+        <div class="module__header">
+          <div class="module__number">Module 8</div>
+          <h1 class="module__title">Stakeholder-analyse</h1>
+          <p class="module__subtitle">24 stakeholderprofielen met communicatiestrategie&euml;n, bondgenoten en valkuilen.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Waarom stakeholders?</h3>
+          <p>Gebiedsontwikkeling is geen solotaak. De Vitaliteitstool bevat een volledige stakeholdermodule met 24 actortypen, elk met hun eigen perspectief, blinde vlekken en communicatiebehoeften. Dit helpt je om gesprekken effectief voor te bereiden en weerstand te begrijpen.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>7 categorie&euml;n stakeholders</h3>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: var(--primary-bg);">&#x1F6CD;</div>
+            <div>
+              <div class="stakeholder-card__name">Ondernemers</div>
+              <div class="stakeholder-card__category">Winkelier, Horeca, Dienstverlener, Ambachtelijk</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Focus op omzet, passantenstroom en bereikbaarheid. Communiceer in termen van klantwaarde en directe voordelen. Vermijd beleidsjargon.</div>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: var(--accent-orange-bg);">&#x1F3E2;</div>
+            <div>
+              <div class="stakeholder-card__name">Vastgoed</div>
+              <div class="stakeholder-card__category">Kleine eigenaar, Belegger, Projectontwikkelaar, Private equity</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Focus op rendement en vastgoedwaarde. Toon financieel onderbouwde business cases. Let op spanning tussen korte-termijn rendement en lange-termijn vitaliteit.</div>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: var(--accent-green-bg);">&#x1F3E0;</div>
+            <div>
+              <div class="stakeholder-card__name">Bewoners</div>
+              <div class="stakeholder-card__category">Binnenstadbewoner</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Focus op leefbaarheid, rust en veiligheid. Neem zorgen serieus en presenteer data als bevestiging, niet als weerlegging. Pas op voor nostalgie-bias.</div>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: #fef2f2;">&#x1F3DB;</div>
+            <div>
+              <div class="stakeholder-card__name">Overheid</div>
+              <div class="stakeholder-card__category">Wethouder Economie, Wethouder Veiligheid, Ambtenaar EZ, Ambtenaar RO</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Onderscheid beleid (wethouder) en uitvoering (ambtenaar). Wethouders denken in politieke cycli en draagvlak. Ambtenaren denken in processen en haalbaarheid.</div>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: var(--accent-teal-bg);">&#x1F6E1;</div>
+            <div>
+              <div class="stakeholder-card__name">Handhaving &amp; Veiligheid</div>
+              <div class="stakeholder-card__category">Politie, RIEC/LIEC, Inspecteur Handhaving</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Focus op veiligheid en signalering. Deel data over kwetsbaarheden en ondermijningssignalen. Respecteer informatieposities en vertrouwelijkheid.</div>
+        </div>
+
+        <div class="stakeholder-card">
+          <div class="stakeholder-card__header">
+            <div class="stakeholder-card__avatar" style="background: var(--accent-purple-bg);">&#x1F91D;</div>
+            <div>
+              <div class="stakeholder-card__name">Maatschappelijk</div>
+              <div class="stakeholder-card__category">Wijkraad, Ondernemersvereniging, Centrummanager</div>
+            </div>
+          </div>
+          <div class="stakeholder-card__body">Verbinders en vertegenwoordigers. Gebruik hun netwerk en lokale kennis. Betrek ze vroeg in het proces voor draagvlak.</div>
+        </div>
+
+        <div class="content-block">
+          <h3>Profielopbouw per stakeholder</h3>
+          <p>Elk stakeholderprofiel in de tool bevat zeven onderdelen:</p>
+          <ol>
+            <li><strong>Perspectief</strong> &mdash; Wat vindt deze actor belangrijk?</li>
+            <li><strong>Blinde vlekken</strong> &mdash; Welke aannames heeft deze actor die niet altijd kloppen?</li>
+            <li><strong>Kwalificaties</strong> &mdash; Welke expertise en middelen brengt deze actor mee?</li>
+            <li><strong>Risicofactoren</strong> &mdash; Hoe kan deze actor het proces blokkeren?</li>
+            <li><strong>Communicatiegids</strong> &mdash; Aanpak, taalgebruik, kanalen, valkuilen en kernboodschappen.</li>
+            <li><strong>Samenwerkingsmatrix</strong> &mdash; Wie zijn bondgenoten, tegenstanders en voorwaardelijke partners?</li>
+            <li><strong>Spanningen</strong> &mdash; Welke specifieke conflicten bestaan er met andere actoren?</li>
+          </ol>
+        </div>
+
+        <div class="info-box info-box--blue">
+          <div class="info-box__title">&#x1F4A1; Praktijktip</div>
+          Gebruik de samenwerkingsmatrix om coalitiestrategieën te plannen. Als je een winkelier mee wilt krijgen, kijk dan wie zijn bondgenoten zijn (horeca, dienstverleners, centrummanager) en wie zijn tegenstanders (binnenstadbewoner). Benader eerst de bondgenoten om een breed front te vormen.
+        </div>
+
+        <!-- KC 7 -->
+        <div class="knowledge-check" data-kc="6">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Welk communicatiekanaal raadt de tool af bij winkeliers?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Data dashboard met passantenstroomcijfers</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">B</span><span>Schriftelijke beleidsnota&apos;s met abstracte doelen en beleidsjargon</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">C</span><span>Direct gesprek in de winkel</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Workshops met vergelijkbare ondernemers</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Bij winkeliers moet je beleidsjargon en abstracte doelen vermijden. Ze denken in omzet, klanten en directe impact. Gebruik data dashboards, directe gesprekken en workshops&mdash;niet beleidsnota&apos;s.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. De tool raadt af om winkeliers te benaderen met schriftelijke beleidsnota&apos;s vol abstracte doelen. Winkeliers willen concrete, data-gedreven informatie over omzet en klantwaarde.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 9: BEVEILIGING & PRIVACY -->
+      <section class="module" data-module="8">
+        <div class="module__header">
+          <div class="module__number">Module 9</div>
+          <h1 class="module__title">Beveiliging &amp; Privacy</h1>
+          <p class="module__subtitle">2FA-authenticatie, datgevoeligheid en AVG-compliance bij het werken met de Vitaliteitstool.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Authenticatie</h3>
+          <p>De Vitaliteitstool is beschermd met een <strong>tweefactorauthenticatie</strong> (2FA):</p>
+          <ul>
+            <li><strong>Wachtwoord</strong> &mdash; Minimaal 12 tekens. Wordt verwerkt via PBKDF2 met 100.000 iteraties en SHA-256 hashing. Het wachtwoord zelf wordt nooit opgeslagen.</li>
+            <li><strong>TOTP-code</strong> &mdash; Tijdgebaseerde eenmalige code via een authenticator-app (bijv. Google Authenticator, Microsoft Authenticator). Vernieuwt elke 30 seconden.</li>
+          </ul>
+          <p>Na succesvolle authenticatie blijft je sessie 8 uur geldig. Er is brute-force bescherming met exponenti&euml;le backoff bij herhaalde mislukte pogingen.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>Lokale verwerking</h3>
+          <p>Alle data wordt verwerkt binnen de Tauri desktop-applicatie op je werkstation. Er is <strong>geen verbinding met externe servers, cloud-opslag of internet</strong>. Dit betekent:</p>
+          <ul>
+            <li>Geen data die je werkstation verlaat</li>
+            <li>Geen afhankelijkheid van internetverbinding</li>
+            <li>Volledige controle over de data door de gemeente</li>
+          </ul>
+        </div>
+
+        <div class="content-block">
+          <h3>Datagevoeligheid</h3>
+          <p>De tool classificeert datasets op drie niveaus:</p>
+        </div>
+
+        <div class="score-table">
+          <thead>
+            <tr>
+              <th>Niveau</th>
+              <th>Voorbeelden</th>
+              <th>DPIA vereist?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="score-badge score-badge--green">PUBLIC</span></td>
+              <td>Locatus, CBS (openbare statistieken)</td>
+              <td>Nee</td>
+            </tr>
+            <tr>
+              <td><span class="score-badge score-badge--yellow">INTERNAL</span></td>
+              <td>KvK, Leegstand, Vergunningen</td>
+              <td>Nee</td>
+            </tr>
+            <tr>
+              <td><span class="score-badge score-badge--red">SENSITIVE</span></td>
+              <td>Meldingen Ondermijning, Prostitutiecontroles, Camera&apos;s, Huisverboden</td>
+              <td>Ja</td>
+            </tr>
+          </tbody>
+        </div>
+
+        <div class="info-box info-box--red">
+          <div class="info-box__title">&#x1F6A8; Let op: SENSITIVE datasets</div>
+          Datasets met het niveau SENSITIVE bevatten potentieel herleidbare persoonsgegevens of opsporingsinformatie. Importeer deze <strong>uitsluitend</strong> als je daartoe bevoegd bent en een geldige DPIA (Data Protection Impact Assessment) beschikbaar is. Raadpleeg bij twijfel je functionaris gegevensbescherming (FG).
+        </div>
+
+        <div class="content-block">
+          <h3>Reader-versie</h3>
+          <p>De Vitaliteitstool Reader (leesprogramma) biedt dezelfde analyse- en visualisatiemogelijkheden, maar <strong>zonder importfunctie</strong>. Dit is ideaal om resultaten te delen met stakeholders zonder hen toegang te geven tot gevoelige brondata of importmogelijkheden.</p>
+        </div>
+
+        <!-- KC 8 -->
+        <div class="knowledge-check" data-kc="7">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Welk gevoeligheidsniveau vereist een DPIA voordat je de dataset mag importeren?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>PUBLIC</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">B</span><span>INTERNAL</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">C</span><span>SENSITIVE</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Alle niveaus vereisen een DPIA</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Alleen datasets met gevoeligheidsniveau SENSITIVE vereisen een DPIA. Dit betreft datasets met potentieel herleidbare persoonsgegevens of opsporingsinformatie, zoals Meldingen Ondermijning en Prostitutiecontroles.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Alleen het niveau SENSITIVE vereist een DPIA. PUBLIC en INTERNAL datasets bevatten geen (direct) herleidbare persoonsgegevens en kunnen zonder DPIA worden ge&iuml;mporteerd.</div>
+        </div>
+      </section>
+
+      <!-- MODULE 10: PRAKTIJKWORKFLOW -->
+      <section class="module" data-module="9">
+        <div class="module__header">
+          <div class="module__number">Module 10</div>
+          <h1 class="module__title">Praktijkworkflow &amp; Afronding</h1>
+          <p class="module__subtitle">De complete workflow van data tot actie, tips voor dagelijks gebruik en afronding.</p>
+        </div>
+
+        <div class="content-block">
+          <h3>De 5-stappenworkflow</h3>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">1</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Data laden</div>
+              <div class="step__desc">Begin met Locatus Online (verplicht) en voeg vervolgens KvK, CBS Demografie, Leegstand en Vergunningen toe voor een compleet basisbeeld. Laad gevoelige datasets alleen als je bevoegd bent.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">2</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Gewichten instellen</div>
+              <div class="step__desc">Bepaal je analysefocus: meer nadruk op kwetsbaarheid (veiligheidsonderzoek), meer op kwaliteit (economische analyse), of een gebalanceerde benadering.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">3</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Verkennen &amp; filteren</div>
+              <div class="step__desc">Bekijk de kaart, zoom in op aandachtsgebieden, filter op specifieke branches of risicocategorie&euml;n. Gebruik monocultuurdetectie om clusters te identificeren.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">4</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Verdiepen</div>
+              <div class="step__desc">Klik op locaties voor de score-uitleg, bekijk het barri&egrave;remodel per branche en raadpleeg de stakeholderprofielen voor je communicatiestrategie.</div>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step__indicator">
+              <div class="step__number">5</div>
+              <div class="step__line"></div>
+            </div>
+            <div class="step__content">
+              <div class="step__title">Acties formuleren</div>
+              <div class="step__desc">Vertaal je bevindingen naar concrete acties: BIBOB-screening, handhavingstrajecten, stakeholdergesprekken, of gebiedsgerichte interventies.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-block">
+          <h3>Veelvoorkomende analysescenario&apos;s</h3>
+        </div>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-red-bg); color: var(--accent-red);">&#x1F50D;</div>
+            <div class="feature-card__title">Ondermijningsscan</div>
+            <div class="feature-card__desc">Zet kwetsbaarheid op 50%, filter op hoge kwetsbaarheidsscore (&gt;7), activeer monocultuurdetectie. Identificeer hotspots voor bestuurlijke aanpak.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-green-bg); color: var(--accent-green);">&#x1F4C8;</div>
+            <div class="feature-card__title">Vitaliteitsanalyse</div>
+            <div class="feature-card__desc">Zet kwaliteit op 50%, filter op lage kwaliteitsscore (&lt;4). Identificeer straten die achteruitgaan en zoek naar oorzaken in leegstand of functiemixproblemen.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-orange-bg); color: var(--accent-orange);">&#x1F465;</div>
+            <div class="feature-card__title">Stakeholdervoorbereiding</div>
+            <div class="feature-card__desc">Selecteer het aandachtsgebied, bekijk de branchesamenstelling en raadpleeg de relevante stakeholderprofielen voor je gespreksstrategie.</div>
+          </div>
+          <div class="feature-card">
+            <div class="feature-card__icon" style="background: var(--accent-teal-bg); color: var(--accent-teal);">&#x1F3AF;</div>
+            <div class="feature-card__title">Branchefocus</div>
+            <div class="feature-card__desc">Open het brancheoverzicht, zoek een specifieke branche, bekijk de score-onderbouwing en het actieperspectief. Gebruik de highlight om alle locaties op de kaart te zien.</div>
+          </div>
+        </div>
+
+        <div class="info-box info-box--green">
+          <div class="info-box__title">&#x2705; Onthoud</div>
+          De Vitaliteitstool is geen einddoel maar een startpunt. De data en analyses die je hier vindt, ondersteunen je besluitvorming&mdash;ze vervangen niet het vakmanschap, de lokale kennis en het menselijk oordeel dat nodig is voor effectieve gebiedsaanpak.
+        </div>
+
+        <div class="content-block">
+          <h3>Samenvatting</h3>
+          <p>In deze e-learning heb je geleerd:</p>
+          <ul>
+            <li>Wat de Vitaliteitstool is en hoe hij past in de City Deal Dynamische Binnensteden</li>
+            <li>Hoe de interface is opgebouwd: zijpaneel, kaart en detailpaneel</li>
+            <li>Hoe je 27 datasets importeert via de kolomkoppeling-interface</li>
+            <li>Hoe branchescores werken: kwaliteit (1-10) en kwetsbaarheid (1-10)</li>
+            <li>Hoe je filters en monocultuurdetectie gebruikt op de kaart</li>
+            <li>Hoe de totaalscore wordt berekend uit dimensies en gewichten</li>
+            <li>Hoe het CCV-barri&egrave;remodel met 6 fasen werkt</li>
+            <li>Hoe je de 24 stakeholderprofielen inzet voor communicatiestrategie</li>
+            <li>Hoe de beveiliging (2FA, lokale verwerking, datagevoeligheid) is geregeld</li>
+            <li>Hoe je de 5-stappenworkflow toepast in de praktijk</li>
+          </ul>
+        </div>
+
+        <!-- KC 9 -->
+        <div class="knowledge-check" data-kc="8">
+          <div class="knowledge-check__header">
+            <span class="knowledge-check__badge">Kennischeck</span>
+          </div>
+          <div class="knowledge-check__question">Je wilt een ondermijningsscan uitvoeren. Welke combinatie van instellingen gebruik je?</div>
+          <div class="knowledge-check__options">
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">A</span><span>Kwaliteitsgewicht verhogen, filteren op hoge kwaliteitsscore</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">B</span><span>Alle gewichten gelijk zetten, geen filters activeren</span></div>
+            <div class="kc-option" data-correct="true"><span class="kc-option__marker">C</span><span>Kwetsbaarheidsgewicht verhogen, filteren op hoge kwetsbaarheidsscore, monocultuurdetectie activeren</span></div>
+            <div class="kc-option" data-correct="false"><span class="kc-option__marker">D</span><span>Omgevingsrisico-gewicht op 100% zetten</span></div>
+          </div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--correct">Correct! Voor een ondermijningsscan verhoog je het kwetsbaarheidsgewicht, filter je op locaties met hoge kwetsbaarheid (&gt;7) en activeer je monocultuurdetectie om verdachte concentraties te signaleren.</div>
+          <div class="knowledge-check__feedback knowledge-check__feedback--wrong">Niet juist. Bij een ondermijningsscan focus je op kwetsbaarheid: verhoog het gewicht, filter op hoge scores en activeer monocultuurdetectie. Zo vind je de hotspots waar bestuurlijke interventie het hardst nodig is.</div>
+        </div>
+
+        <!-- COMPLETION -->
+        <div class="completion" id="completionScreen" style="display: none;">
+          <div class="completion__icon">&#x1F3C6;</div>
+          <div class="completion__title">E-learning voltooid!</div>
+          <div class="completion__text">Je hebt alle modules van de Vitaliteitstool-gebruikerstraining doorlopen. Je bent nu klaar om zelfstandig met de tool te werken.</div>
+          <div class="completion__stats">
+            <div class="completion__stat">
+              <div class="completion__stat-value" id="statModules">10</div>
+              <div class="completion__stat-label">Modules</div>
+            </div>
+            <div class="completion__stat">
+              <div class="completion__stat-value" id="statChecks">0/9</div>
+              <div class="completion__stat-label">Kennischecks</div>
+            </div>
+          </div>
+          <p style="font-size: 14px; color: var(--text-muted); margin-top: 24px;">Vitaliteitstool &mdash; City Deal Dynamische Binnensteden<br>Knowledge by Data B.V. &bull; knowledgebydata.nl</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+  'use strict';
+
+  const MODULES = [
+    { title: 'Welkom bij de Vitaliteitstool', short: 'Welkom' },
+    { title: 'Interface & Navigatie', short: 'Interface' },
+    { title: 'Data Importeren', short: 'Data Import' },
+    { title: 'Brancheclassificatie', short: 'Branches' },
+    { title: 'Kaart & Filters', short: 'Kaart & Filters' },
+    { title: 'Scores & Berekeningen', short: 'Scores' },
+    { title: 'Het Barrièremodel', short: 'Barrièremodel' },
+    { title: 'Stakeholder-analyse', short: 'Stakeholders' },
+    { title: 'Beveiliging & Privacy', short: 'Beveiliging' },
+    { title: 'Praktijkworkflow & Afronding', short: 'Praktijk' }
+  ];
+
+  const state = {
+    currentModule: 0,
+    completedModules: new Set(),
+    correctAnswers: 0,
+    totalChecks: 9,
+    answeredChecks: new Set()
+  };
+
+  function init() {
+    renderNav();
+    bindEvents();
+    updateProgress();
+  }
+
+  function renderNav() {
+    const navList = document.getElementById('navList');
+    navList.innerHTML = MODULES.map((mod, i) => `
+      <div class="nav-item ${i === 0 ? 'nav-item--active' : ''}" data-nav="${i}">
+        <span class="nav-item__icon">${i + 1}</span>
+        <span class="nav-item__label">${mod.short}</span>
+      </div>
+    `).join('');
+  }
+
+  function bindEvents() {
+    document.getElementById('navList').addEventListener('click', (e) => {
+      const navItem = e.target.closest('.nav-item');
+      if (navItem) {
+        const idx = parseInt(navItem.dataset.nav, 10);
+        goToModule(idx);
+      }
+    });
+
+    document.querySelectorAll('.kc-option').forEach(option => {
+      option.addEventListener('click', handleKcClick);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (state.currentModule < MODULES.length - 1) {
+          goToModule(state.currentModule + 1);
+        }
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (state.currentModule > 0) {
+          goToModule(state.currentModule - 1);
+        }
+      }
+    });
+  }
+
+  function goToModule(index) {
+    if (index < 0 || index >= MODULES.length) return;
+
+    state.completedModules.add(state.currentModule);
+    state.currentModule = index;
+
+    document.querySelectorAll('.module').forEach((mod, i) => {
+      mod.classList.toggle('module--active', i === index);
+    });
+
+    document.querySelectorAll('.nav-item').forEach((item, i) => {
+      item.classList.remove('nav-item--active');
+      if (i === index) item.classList.add('nav-item--active');
+      if (state.completedModules.has(i) && i !== index) {
+        item.classList.add('nav-item--completed');
+        item.querySelector('.nav-item__icon').textContent = '\u2713';
+      }
+    });
+
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // Show completion screen on last module after all checks
+    if (index === MODULES.length - 1) {
+      checkCompletion();
+    }
+  }
+
+  function updateProgress() {
+    const total = MODULES.length;
+    const completed = state.completedModules.size;
+    const current = state.currentModule + 1;
+    const pct = Math.round((current / total) * 100);
+
+    document.getElementById('progressText').textContent = `Module ${current} van ${total}`;
+    document.getElementById('progressFill').style.width = `${pct}%`;
+  }
+
+  function handleKcClick(e) {
+    const option = e.target.closest('.kc-option');
+    if (!option) return;
+
+    const check = option.closest('.knowledge-check');
+    const kcId = check.dataset.kc;
+
+    if (state.answeredChecks.has(kcId)) return;
+    state.answeredChecks.add(kcId);
+
+    const isCorrect = option.dataset.correct === 'true';
+    if (isCorrect) state.correctAnswers++;
+
+    option.classList.add(isCorrect ? 'kc-option--correct' : 'kc-option--wrong');
+
+    check.querySelectorAll('.kc-option').forEach(opt => {
+      if (opt !== option) {
+        opt.classList.add('kc-option--disabled');
+        if (opt.dataset.correct === 'true') {
+          opt.classList.add('kc-option--correct');
+        }
+      }
+    });
+
+    const feedbackClass = isCorrect ? 'knowledge-check__feedback--correct' : 'knowledge-check__feedback--wrong';
+    const feedback = check.querySelector(`.${feedbackClass}`);
+    if (feedback) feedback.style.display = 'block';
+  }
+
+  function checkCompletion() {
+    if (state.answeredChecks.size >= state.totalChecks) {
+      const screen = document.getElementById('completionScreen');
+      if (screen) {
+        screen.style.display = 'block';
+        document.getElementById('statChecks').textContent = `${state.correctAnswers}/${state.totalChecks}`;
+      }
+    }
+  }
+
+  // Add nav buttons dynamically
+  document.querySelectorAll('.module').forEach((mod, i) => {
+    if (i >= MODULES.length) return;
+    const hasKc = mod.querySelector('.knowledge-check');
+    const target = hasKc || mod.querySelector('.content-block:last-of-type') || mod.querySelector('.info-box:last-of-type');
+    if (!target) return;
+
+    const nav = document.createElement('div');
+    nav.className = 'nav-buttons';
+
+    if (i > 0) {
+      nav.innerHTML += `<button class="btn btn--secondary" onclick="goToModule(${i - 1})">&larr; Vorige</button>`;
+    } else {
+      nav.innerHTML += '<div></div>';
+    }
+
+    if (i < MODULES.length - 1) {
+      nav.innerHTML += `<button class="btn btn--primary" onclick="goToModule(${i + 1})">Volgende &rarr;</button>`;
+    } else {
+      nav.innerHTML += `<button class="btn btn--primary" onclick="checkCompletion()">Afronden &#x2713;</button>`;
+    }
+
+    mod.appendChild(nav);
+  });
+
+  init();
+  </script>
+</body>
+</html>

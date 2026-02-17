@@ -45,10 +45,24 @@
             font-weight: 400;
         }
 
+        .section-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+            padding-left: 0.25rem;
+        }
+
         .card-grid {
             display: grid;
             grid-template-columns: 1fr;
             gap: 1rem;
+        }
+
+        .card-grid + .section-label {
+            margin-top: 2rem;
         }
 
         .card {
@@ -93,6 +107,11 @@
         .card__icon--schouw {
             background: #d1fae5;
             color: #059669;
+        }
+
+        .card__icon--elearning {
+            background: #fef3c7;
+            color: #d97706;
         }
 
         .card__content {
@@ -142,6 +161,7 @@
             <p class="header__subtitle">KbD Analysis Suite</p>
         </div>
 
+        <div class="section-label">Applicaties</div>
         <div class="card-grid">
             <a href="vitaliteitstool-analyzer.html" class="card">
                 <div class="card__icon card__icon--analyzer">
@@ -172,6 +192,20 @@
                 <div class="card__content">
                     <div class="card__title">Schouw-app</div>
                     <div class="card__description">Digitaal schouwformulier voor waarnemingen op locatie</div>
+                </div>
+                <span class="card__arrow">&rarr;</span>
+            </a>
+        </div>
+
+        <div class="section-label">Training</div>
+        <div class="card-grid">
+            <a href="e-learning-vitaliteitstool.html" class="card">
+                <div class="card__icon card__icon--elearning">
+                    <span>&#x1F393;</span>
+                </div>
+                <div class="card__content">
+                    <div class="card__title">E-Learning Vitaliteitstool</div>
+                    <div class="card__description">Interactieve gebruikerstraining voor de Vitaliteitstool</div>
                 </div>
                 <span class="card__arrow">&rarr;</span>
             </a>
