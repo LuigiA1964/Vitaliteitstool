@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vitaliteitstool — Leesprogramma</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-bg: #f8fafc; --color-surface: #ffffff; --color-surface-alt: #f1f5f9;
+      --color-border: #e2e8f0; --color-border-hover: #cbd5e1;
+      --color-text: #1e293b; --color-text-muted: #64748b; --color-text-dim: #94a3b8;
+      --color-accent: #3b82f6; --color-accent-hover: #2563eb;
+      --color-success: #16a34a; --color-warning: #d97706; --color-danger: #dc2626;
+      --color-score-red: #dc2626; --color-score-orange: #ea580c;
+      --color-score-yellow: #ca8a04; --color-score-green: #16a34a;
+      --sidebar-width: 340px; --header-height: 56px; --detail-width: 420px;
+      --font-sans: 'IBM Plex Sans', -apple-system, sans-serif;
+      --font-mono: 'IBM Plex Mono', monospace;
+      --radius: 8px; --shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    [data-theme="dark"] {
+      --color-bg: #0a0e17;
+      --color-surface: #111827;
+      --color-surface-alt: #1a2235;
+      --color-border: #1e293b;
+      --color-border-hover: #334155;
+      --color-text: #e2e8f0;
+      --color-text-muted: #94a3b8;
+      --color-text-dim: #64748b;
+      --color-accent: #3b82f6;
+      --color-accent-hover: #2563eb;
+      --color-success: #22c55e;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-score-red: #dc2626;
+      --color-score-orange: #f97316;
+      --color-score-yellow: #eab308;
+      --color-score-green: #22c55e;
+      --shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+    body { font-family: var(--font-sans); background: var(--color-bg); color: var(--color-text); height: 100vh; overflow: hidden; font-size: 14px; line-height: 1.5; }
+
+    .header { height: var(--header-height); background: var(--color-surface); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; box-shadow: var(--shadow); }
+    .header__brand { display: flex; align-items: center; gap: 12px; }
+    .header__logo { width: 32px; height: 32px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: white; }
+    .header__title { font-size: 18px; font-weight: 600; }
+    .header__subtitle { font-size: 12px; color: var(--color-text-muted); }
+
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); color: var(--color-text); font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+    .btn:hover { background: var(--color-surface-alt); border-color: var(--color-border-hover); }
+    .btn--primary { background: var(--color-accent); border-color: var(--color-accent); color: white; }
+    .btn--primary:hover { background: var(--color-accent-hover); }
+    .btn--sm { padding: 5px 10px; font-size: 12px; }
+
+    .layout { display: flex; height: calc(100vh - var(--header-height)); }
+
+    .sidebar { width: var(--sidebar-width); background: var(--color-surface); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+    .sidebar__section { padding: 16px; border-bottom: 1px solid var(--color-border); }
+    .sidebar__section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-dim); margin-bottom: 10px; }
+    .sidebar__scrollable { flex: 1; overflow-y: auto; }
+
+    .summary-card { background: var(--color-surface-alt); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 12px; margin-bottom: 8px; }
+    .summary-card__title { font-size: 11px; color: var(--color-text-muted); margin-bottom: 3px; }
+    .summary-card__value { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
+    .summary-card__detail { font-size: 11px; color: var(--color-text-dim); margin-top: 3px; }
+
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .filter-group { margin-bottom: 12px; }
+    .filter-group__label { font-size: 12px; font-weight: 500; margin-bottom: 4px; display: block; color: var(--color-text); }
+    .filter-group__input, .filter-group__select { width: 100%; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px; font-family: var(--font-sans); background: var(--color-surface); color: var(--color-text); }
+    .filter-group__input:focus, .filter-group__select:focus { outline: none; border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+
+    .filter-group__toggle { display: flex; align-items: center; gap: 8px; }
+    .checkbox { width: 18px; height: 18px; cursor: pointer; accent-color: var(--color-accent); }
+
+    .filter-range { display: flex; gap: 8px; align-items: center; }
+    .filter-range__input { width: 50%; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 4px; font-size: 12px; font-family: var(--font-sans); background: var(--color-surface); color: var(--color-text); }
+    .filter-range__input:focus { outline: none; border-color: var(--color-accent); box-shadow: inset 0 0 0 1px var(--color-accent); }
+    .filter-range__sep { font-size: 11px; color: var(--color-text-dim); }
+
+    .area-list-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.1s; }
+    .area-list-item:hover { background: var(--color-surface-alt); }
+    .area-list-item--selected { background: rgba(59,130,246,0.08); border-left: 3px solid var(--color-accent); padding-left: 9px; }
+    .area-list-item__score { font-size: 16px; font-weight: 700; font-family: var(--font-mono); min-width: 28px; text-align: center; }
+    .area-list-item__info { flex: 1; }
+    .area-list-item__pc6 { font-size: 13px; font-weight: 600; }
+    .area-list-item__street { font-size: 11px; color: var(--color-text-muted); }
+    .area-list-item__badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 3px; }
+    .area-list-item__badge { padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 500; background: rgba(59,130,246,0.1); color: var(--color-accent); }
+    .area-list-item__badge--mono { background: rgba(217,119,6,0.1); color: var(--color-warning); }
+
+    .map-container { flex: 1; position: relative; }
+    #map { width: 100%; height: 100%; }
+
+    .detail-panel { width: var(--detail-width); background: var(--color-surface); border-left: 1px solid var(--color-border); display: none; flex-direction: column; overflow: hidden; flex-shrink: 0; }
+    .detail-panel--open { display: flex; }
+    .detail-panel__header { padding: 16px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: flex-start; }
+    .detail-panel__title { font-size: 15px; font-weight: 600; flex: 1; }
+    .detail-panel__content { flex: 1; overflow-y: auto; padding: 16px; }
+
+    .category-badge { display: inline-block; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; margin-bottom: 16px; }
+    .category-badge--vitaal { background: rgba(22, 163, 74, 0.1); color: var(--color-score-green); border: 1px solid rgba(22, 163, 74, 0.2); }
+    .category-badge--aandacht { background: rgba(202, 138, 4, 0.1); color: var(--color-score-yellow); border: 1px solid rgba(202, 138, 4, 0.2); }
+    .category-badge--zorgelijk { background: rgba(234, 88, 12, 0.1); color: var(--color-score-orange); border: 1px solid rgba(234, 88, 12, 0.2); }
+    .category-badge--kritiek { background: rgba(220, 38, 38, 0.1); color: var(--color-score-red); border: 1px solid rgba(220, 38, 38, 0.2); }
+
+    .contextual-summary { background: var(--color-surface-alt); border-left: 3px solid var(--color-accent); padding: 12px; border-radius: 4px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: var(--color-text-muted); }
+
+    .score-bar { margin-bottom: 10px; }
+    .score-bar__header { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; }
+    .score-bar__name { font-weight: 500; }
+    .score-bar__value { font-weight: 600; font-family: var(--font-mono); }
+    .score-bar__track { height: 6px; background: var(--color-surface-alt); border-radius: 3px; overflow: hidden; }
+    .score-bar__fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+    .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-dim); margin-bottom: 8px; margin-top: 12px; }
+    .section-title:first-child { margin-top: 0; }
+
+    .branch-item { padding: 6px 0; font-size: 12px; color: var(--color-text); border-bottom: 1px solid var(--color-border); }
+    .branch-item:last-child { border-bottom: none; }
+    .branch-item__name { font-weight: 500; }
+    .branch-item__count { color: var(--color-text-muted); }
+
+    .mono-badge { display: inline-flex; align-items: center; gap: 4px; padding: 6px 10px; border-radius: 4px; font-size: 11px; font-weight: 500; background: rgba(217,119,6,0.1); color: var(--color-warning); border: 1px solid rgba(217,119,6,0.2); margin-bottom: 6px; }
+
+    .branch-highlight-banner { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--color-surface); border: 1px solid var(--color-accent); border-radius: var(--radius); padding: 8px 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; animation: slideDown 0.2s ease; }
+    .branch-highlight-banner__count { font-family: var(--font-mono); font-weight: 700; color: var(--color-accent); }
+    .branch-highlight-banner__close { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--color-text-muted); padding: 2px 6px; border-radius: 4px; }
+    .branch-highlight-banner__close:hover { background: var(--color-surface-alt); color: var(--color-text); }
+    @keyframes slideDown { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    .location-info { font-size: 12px; color: var(--color-text-muted); }
+    .location-info__item { margin-bottom: 4px; }
+    .location-info__label { font-weight: 500; color: var(--color-text); }
+
+    /* import-hero CSS verwijderd — vervangen door startup-overlay */
+
+    .map-legend { position: absolute; bottom: 30px; right: 12px; z-index: 1000; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 12px; box-shadow: var(--shadow); }
+    .map-legend__title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--color-text-dim); margin-bottom: 8px; }
+    .map-legend__item { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 12px; }
+    .map-legend__color { width: 16px; height: 16px; border-radius: 3px; }
+
+    .filter-badge { display: inline-block; background: var(--color-accent); color: white; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500; margin-left: 6px; }
+
+    .theme-toggle { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface-alt); color: var(--color-text-muted); font-family: var(--font-sans); font-size: 13px; cursor: pointer; transition: all 0.15s ease; user-select: none; }
+    .theme-toggle:hover { background: var(--color-border); color: var(--color-text); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--color-border-hover); }
+
+    .startup-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 10000; transition: opacity 0.5s ease;
+    }
+    .startup-overlay--hidden { opacity: 0; pointer-events: none; }
+    .startup-panel {
+      text-align: center; color: #e2e8f0; max-width: 560px; padding: 48px 40px;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; backdrop-filter: blur(20px);
+    }
+    .startup-panel__logo {
+      width: 72px; height: 72px; margin: 0 auto 20px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 18px; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 32px; color: white;
+      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+    }
+    .startup-panel__title { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+    .startup-panel__subtitle {
+      font-size: 14px; color: #94a3b8; margin-bottom: 6px;
+    }
+    .startup-panel__org {
+      font-size: 12px; color: #64748b; margin-bottom: 36px;
+      letter-spacing: 0.05em;
+    }
+    .startup-action {
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      padding: 32px; border: 2px dashed rgba(255,255,255,0.15);
+      border-radius: 16px; cursor: pointer; transition: all 0.2s;
+    }
+    .startup-action:hover {
+      border-color: #10b981; background: rgba(16,185,129,0.05);
+    }
+    .startup-action__icon { font-size: 36px; }
+    .startup-action__title { font-size: 18px; font-weight: 600; }
+    .startup-action__desc {
+      font-size: 13px; color: #94a3b8; line-height: 1.5; max-width: 360px;
+    }
+    .startup-panel__footer {
+      font-size: 11px; color: #475569; margin-top: 36px; line-height: 1.5;
+    }
+    .startup-panel__version {
+      margin-top: 8px; font-family: var(--font-mono); font-size: 10px; color: #334155;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header__brand">
+    <div class="header__logo">V</div>
+    <div>
+      <div class="header__title">Vitaliteitstool</div>
+      <div class="header__subtitle">Leesprogramma • Alleen-lezen weergave</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="theme-toggle" id="themeToggle" title="Wissel tussen licht en donker thema">
+      <span id="themeIcon">☀️</span> <span id="themeLabel">Licht</span>
+    </button>
+    <button class="btn" id="btnLoadFile">📂 Open JSON-bestand</button>
+    <input type="file" id="fileInput" accept=".json" style="display:none">
+  </div>
+</header>
+
+<div class="layout">
+  <!-- Startup Overlay -->
+  <div class="startup-overlay" id="startupOverlay">
+    <div class="startup-panel">
+      <div class="startup-panel__logo">V</div>
+      <div class="startup-panel__title">Vitaliteitstool</div>
+      <div class="startup-panel__subtitle">Leesprogramma voor Dynamische Binnensteden</div>
+      <div class="startup-panel__org">Knowledge by Data B.V. in opdracht van de City Deal Dynamische Binnensteden</div>
+      <div class="startup-action" id="startupDropZone">
+        <div class="startup-action__icon">📂</div>
+        <div class="startup-action__title">Open een analyse</div>
+        <div class="startup-action__desc">
+          Sleep een JSON-bestand hierheen of klik om een analyse te openen
+          die is geëxporteerd vanuit het Vitaliteitstool Analyseprogramma.
+        </div>
+      </div>
+      <div class="startup-panel__footer">
+        Zero-Cloud — Alle data wordt lokaal in uw browser verwerkt. Er worden geen gegevens verstuurd.
+        <div class="startup-panel__version">v1.0 — Proof of Concept</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content (shown when data loaded) -->
+  <div id="mainContent" style="display:none;width:100%;height:100%;">
+    <div class="layout" style="height:100%">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar__section">
+          <div class="sidebar__section-title">Samenvatting</div>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-card__title">Gem. vitaliteit</div>
+              <div class="summary-card__value" id="summaryVitality">—</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card__title">PC6-gebieden</div>
+              <div class="summary-card__value" id="summaryAreas">—</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card__title">Kritieke gebieden</div>
+              <div class="summary-card__value" id="summaryCritical" style="color:var(--color-danger)">—</div>
+            </div>
+            <div class="summary-card">
+              <div class="summary-card__title">Monocultuur</div>
+              <div class="summary-card__value" id="summaryMono" style="color:var(--color-warning)">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar__section" style="padding-bottom: 8px;">
+          <div class="sidebar__section-title">Filters <span class="filter-badge" id="filterCount" style="display:none;">0</span></div>
+        </div>
+
+        <!-- Filters Panel -->
+        <div class="sidebar__scrollable" id="filterPanel" style="border-bottom: 1px solid var(--color-border); padding: 0 16px; overflow-y: auto;">
+          <div style="padding: 12px 0;">
+            <div class="filter-group">
+              <label class="filter-group__label">Vitaliteitscategorie</label>
+              <select id="filterCategory" class="filter-group__select">
+                <option value="">Alle categorieën</option>
+                <option value="vitaal">Vitaal (8–10)</option>
+                <option value="aandacht">Aandacht (6–7)</option>
+                <option value="zorgelijk">Zorgelijk (4–5)</option>
+                <option value="kritiek">Kritiek (1–3)</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Winkelgebied</label>
+              <select id="filterWinkelgebied" class="filter-group__select">
+                <option value="">Alle</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">PC6 (zoeken)</label>
+              <input type="text" id="filterPC6" class="filter-group__input" placeholder="bijv. 1211AB">
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Straat</label>
+              <select id="filterStraat" class="filter-group__select">
+                <option value="">Alle</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Buurt</label>
+              <select id="filterBuurt" class="filter-group__select">
+                <option value="">Alle</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Wijk</label>
+              <select id="filterWijk" class="filter-group__select">
+                <option value="">Alle</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Kwetsbaarheid (bereik 0–10)</label>
+              <div class="filter-range">
+                <input type="number" id="filterVulnMin" class="filter-range__input" placeholder="Min" min="0" max="10" step="0.5">
+                <span class="filter-range__sep">—</span>
+                <input type="number" id="filterVulnMax" class="filter-range__input" placeholder="Max" min="0" max="10" step="0.5">
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__label">Kwaliteit (bereik 0–10)</label>
+              <div class="filter-range">
+                <input type="number" id="filterQualityMin" class="filter-range__input" placeholder="Min" min="0" max="10" step="0.5">
+                <span class="filter-range__sep">—</span>
+                <input type="number" id="filterQualityMax" class="filter-range__input" placeholder="Max" min="0" max="10" step="0.5">
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-group__toggle">
+                <input type="checkbox" id="filterMonoculture" class="checkbox">
+                <span>Alleen monocultuur</span>
+              </label>
+            </div>
+
+            <button class="btn btn--primary" id="btnClearFilters" style="width: 100%; margin-top: 12px; justify-content: center;">Filters wissen</button>
+          </div>
+        </div>
+
+        <div class="sidebar__section" style="padding-bottom:8px">
+          <div class="sidebar__section-title">Gebieden (op score)</div>
+        </div>
+        <div class="sidebar__scrollable" id="areaList" style="flex: 1;"></div>
+
+        <div class="sidebar__section" style="border-top: 1px solid var(--color-border);">
+          <div class="sidebar__section-title">Export-informatie</div>
+          <dl style="font-size: 11px; color: var(--color-text-muted);" id="metaInfo"></dl>
+        </div>
+      </aside>
+
+      <!-- Map -->
+      <div class="map-container">
+        <div id="map" style="width:100%;height:100%"></div>
+        <div class="map-legend">
+          <div class="map-legend__title">Vitaliteitsindex</div>
+          <div class="map-legend__item"><div class="map-legend__color" style="background:#16a34a"></div> 8–10 Vitaal</div>
+          <div class="map-legend__item"><div class="map-legend__color" style="background:#ca8a04"></div> 6–7 Aandacht</div>
+          <div class="map-legend__item"><div class="map-legend__color" style="background:#ea580c"></div> 4–5 Zorgelijk</div>
+          <div class="map-legend__item"><div class="map-legend__color" style="background:#dc2626"></div> 1–3 Kritiek</div>
+        </div>
+      </div>
+
+      <!-- Detail Panel -->
+      <aside class="detail-panel" id="readerDetailPanel">
+        <div class="detail-panel__header">
+          <div class="detail-panel__title" id="readerDetailTitle">—</div>
+          <button class="btn btn--sm" id="btnCloseDetail" style="white-space: nowrap;">✕</button>
+        </div>
+        <div class="detail-panel__content" id="readerDetailContent"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+'use strict';
+
+// ========== THEME MANAGEMENT ==========
+
+(function initTheme() {
+  const THEME_KEY = 'vitaliteitstool-theme';
+  const saved = localStorage.getItem(THEME_KEY);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+})();
+
+function toggleTheme() {
+  const THEME_KEY = 'vitaliteitstool-theme';
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(THEME_KEY, next);
+  updateThemeButton();
+}
+
+function updateThemeButton() {
+  const theme = document.documentElement.getAttribute('data-theme') || 'light';
+  const icon = document.getElementById('themeIcon');
+  const label = document.getElementById('themeLabel');
+  if (icon && label) {
+    icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+    label.textContent = theme === 'dark' ? 'Donker' : 'Licht';
+  }
+}
+
+const ReaderState = {
+  data: null,
+  map: null,
+  markers: [],
+  selectedPc6: null,
+  branchLookup: {},
+  filteredAreas: [],
+  branchHighlight: null,
+  filters: {
+    category: '',
+    winkelgebied: '',
+    pc6: '',
+    straat: '',
+    buurt: '',
+    wijk: '',
+    qualityMin: null,
+    qualityMax: null,
+    vulnMin: null,
+    vulnMax: null,
+    monoculture: false
+  }
+};
+
+// ========== UTILITIES ==========
+
+function getScoreColor(score) {
+  if (score >= 8) return '#16a34a';
+  if (score >= 6) return '#ca8a04';
+  if (score >= 4) return '#ea580c';
+  return '#dc2626';
+}
+
+function getScoreClass(score) {
+  if (score >= 8) return 'color: #16a34a';
+  if (score >= 6) return 'color: #ca8a04';
+  if (score >= 4) return 'color: #ea580c';
+  return 'color: #dc2626';
+}
+
+function getCategory(score) {
+  if (score >= 8) return 'vitaal';
+  if (score >= 6) return 'aandacht';
+  if (score >= 4) return 'zorgelijk';
+  return 'kritiek';
+}
+
+function getCategoryLabel(score) {
+  if (score >= 8) return 'VITAAL';
+  if (score >= 6) return 'AANDACHT';
+  if (score >= 4) return 'ZORGELIJK';
+  return 'KRITIEK';
+}
+
+function getCategoryBadgeClass(score) {
+  const cat = getCategory(score);
+  return `category-badge category-badge--${cat}`;
+}
+
+function buildBranchLookup(areas) {
+  const lookup = {};
+  areas.forEach(area => {
+    if (area.scores?.monocultureClusters) {
+      area.scores.monocultureClusters.forEach(cluster => {
+        lookup[cluster.branchCode] = cluster.branchName || cluster.branchCode;
+      });
+    }
+  });
+  return lookup;
+}
+
+function resolveBranchName(code) {
+  return ReaderState.branchLookup[code] || code;
+}
+
+function generateContextSummary(area) {
+  const s = area.scores;
+  const score = s.vitalityIndex;
+  const category = getCategory(score);
+
+  let summary = '';
+
+  if (category === 'kritiek') {
+    const dims = [
+      { name: 'Economisch', val: s.economic },
+      { name: 'Veiligheid', val: s.safety },
+      { name: 'Sociaal', val: s.social },
+      { name: 'Ruimtelijk', val: s.spatial },
+      { name: 'Ondermijning', val: s.undermining }
+    ].sort((a, b) => a.val - b.val);
+
+    const weakest = dims.slice(0, 2).map(d => d.name.toLowerCase()).join(' en ');
+    const monoWarning = s.monocultureClusters?.length > 0
+      ? ` Er is sprake van monocultuur met name in ${s.monocultureClusters.slice(0, 2).map(c => c.branchName || c.category).join(', ')}.`
+      : '';
+    const underminingInfo = s.undermining < 4 ? ` Ook het ondermijningsrisico is hoog.` : '';
+
+    summary = `Dit gebied scoort kritiek met een vitaliteitsindex van ${score}. De belangrijkste zorgen zijn laagscores op ${weakest}.${monoWarning}${underminingInfo}`;
+  }
+  else if (category === 'zorgelijk') {
+    const dims = [
+      { name: 'Economisch', val: s.economic },
+      { name: 'Veiligheid', val: s.safety },
+      { name: 'Sociaal', val: s.social },
+      { name: 'Ruimtelijk', val: s.spatial },
+      { name: 'Ondermijning', val: s.undermining }
+    ].sort((a, b) => a.val - b.val);
+
+    const weakest = dims[0].name.toLowerCase();
+    const positives = dims.filter(d => d.val >= 6).map(d => d.name.toLowerCase());
+    const posStr = positives.length > 0 ? ` Sterkere punten zijn ${positives.join(' en ')}.` : '';
+
+    summary = `Dit gebied verdient extra aandacht met een vitaliteitsindex van ${score}. Een zwak punt is de ${weakest}-dimensie.${posStr}`;
+  }
+  else if (category === 'aandacht') {
+    const dims = [
+      { name: 'Economisch', val: s.economic },
+      { name: 'Veiligheid', val: s.safety },
+      { name: 'Sociaal', val: s.social },
+      { name: 'Ruimtelijk', val: s.spatial },
+      { name: 'Ondermijning', val: s.undermining }
+    ].sort((a, b) => a.val - b.val);
+
+    const weak = dims.filter(d => d.val < 6).map(d => d.name.toLowerCase());
+    const strong = dims.filter(d => d.val >= 7).map(d => d.name.toLowerCase());
+    const weakStr = weak.length > 0 ? weak.join(' en ') : 'enkele dimensies';
+    const strongStr = strong.length > 0 ? ` Sterke punten zijn ${strong.join(' en ')}.` : '';
+
+    summary = `Dit gebied functioneert redelijk goed met een vitaliteitsindex van ${score}, maar verdient aandacht op ${weakStr}.${strongStr}`;
+  }
+  else { // vitaal
+    const dims = [
+      { name: 'Economisch', val: s.economic },
+      { name: 'Veiligheid', val: s.safety },
+      { name: 'Sociaal', val: s.social },
+      { name: 'Ruimtelijk', val: s.spatial },
+      { name: 'Ondermijning', val: s.undermining }
+    ].sort((a, b) => b.val - a.val);
+
+    const strong = dims.slice(0, 2).map(d => d.name.toLowerCase()).join(' en ');
+    const weak = dims.filter(d => d.val < 6);
+    const weakStr = weak.length > 0 ? ` Een aandachtspunt is ${weak[0].name.toLowerCase()}.` : '';
+
+    summary = `Dit gebied is vitaal met een vitaliteitsindex van ${score}. Sterke punten zijn ${strong}.${weakStr}`;
+  }
+
+  return summary;
+}
+
+function countActiveFilters() {
+  let count = 0;
+  if (ReaderState.filters.category) count++;
+  if (ReaderState.filters.winkelgebied) count++;
+  if (ReaderState.filters.pc6) count++;
+  if (ReaderState.filters.straat) count++;
+  if (ReaderState.filters.buurt) count++;
+  if (ReaderState.filters.wijk) count++;
+  if (ReaderState.filters.vulnMin !== null || ReaderState.filters.vulnMax !== null) count++;
+  if (ReaderState.filters.qualityMin !== null || ReaderState.filters.qualityMax !== null) count++;
+  if (ReaderState.filters.monoculture) count++;
+  return count;
+}
+
+function updateFilterBadge() {
+  const count = countActiveFilters();
+  const badge = document.getElementById('filterCount');
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ========== FILE LOADING ==========
+
+function loadJsonFile(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (!data.meta || !data.areas) {
+        alert('Ongeldig bestandsformaat. Verwacht Vitaliteitstool JSON-export.');
+        return;
+      }
+      ReaderState.data = data;
+      ReaderState.branchLookup = buildBranchLookup(data.areas);
+      ReaderState.filteredAreas = [...data.areas];
+      showMainContent();
+    } catch (err) {
+      alert('Fout bij laden: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function showMainContent() {
+  const overlay = document.getElementById('startupOverlay');
+  if (overlay) {
+    overlay.classList.add('startup-overlay--hidden');
+    setTimeout(() => { overlay.style.display = 'none'; }, 500);
+  }
+  document.getElementById('mainContent').style.display = 'block';
+
+  setTimeout(() => {
+    initReaderMap();
+    populateFilterOptions();
+    renderSummary();
+    renderAreaList();
+    renderMapMarkers();
+    updateFilterBadge();
+  }, 100);
+}
+
+// ========== FILTER OPTIONS POPULATION ==========
+
+function populateFilterOptions() {
+  const data = ReaderState.data;
+
+  const winkelgebieden = new Set();
+  const straten = new Set();
+  const buurten = new Set();
+  const wijken = new Set();
+
+  data.areas.forEach(area => {
+    if (area.winkelgebied) winkelgebieden.add(area.winkelgebied);
+    if (area.location?.street) straten.add(area.location.street);
+    if (area.location?.neighborhood) buurten.add(area.location.neighborhood);
+    if (area.location?.district) wijken.add(area.location.district);
+  });
+
+  populateSelect('filterWinkelgebied', Array.from(winkelgebieden).sort());
+  populateSelect('filterStraat', Array.from(straten).sort());
+  populateSelect('filterBuurt', Array.from(buurten).sort());
+  populateSelect('filterWijk', Array.from(wijken).sort());
+}
+
+function populateSelect(selectId, values) {
+  const select = document.getElementById(selectId);
+  const options = select.querySelectorAll('option');
+  const defaultOption = options[0];
+
+  values.forEach(val => {
+    const opt = document.createElement('option');
+    opt.value = val;
+    opt.textContent = val;
+    select.appendChild(opt);
+  });
+}
+
+// ========== FILTERING ==========
+
+function applyFilters() {
+  const areas = ReaderState.data.areas;
+
+  ReaderState.filteredAreas = areas.filter(area => {
+    const s = area.scores;
+    const score = s.vitalityIndex;
+
+    // Category filter
+    if (ReaderState.filters.category) {
+      const cat = getCategory(score);
+      if (cat !== ReaderState.filters.category) return false;
+    }
+
+    // Winkelgebied filter
+    if (ReaderState.filters.winkelgebied && area.winkelgebied !== ReaderState.filters.winkelgebied) {
+      return false;
+    }
+
+    // PC6 filter
+    if (ReaderState.filters.pc6 && !area.pc6.toUpperCase().includes(ReaderState.filters.pc6.toUpperCase())) {
+      return false;
+    }
+
+    // Straat filter
+    if (ReaderState.filters.straat && area.location?.street !== ReaderState.filters.straat) {
+      return false;
+    }
+
+    // Buurt filter
+    if (ReaderState.filters.buurt && area.location?.neighborhood !== ReaderState.filters.buurt) {
+      return false;
+    }
+
+    // Wijk filter
+    if (ReaderState.filters.wijk && area.location?.district !== ReaderState.filters.wijk) {
+      return false;
+    }
+
+    // Vulnerability range filter
+    if (ReaderState.filters.vulnMin !== null && (s.vulnerabilityAvg || 0) < ReaderState.filters.vulnMin) return false;
+    if (ReaderState.filters.vulnMax !== null && (s.vulnerabilityAvg || 0) > ReaderState.filters.vulnMax) return false;
+
+    // Quality range filter
+    if (ReaderState.filters.qualityMin !== null && (s.qualityAvg || 0) < ReaderState.filters.qualityMin) return false;
+    if (ReaderState.filters.qualityMax !== null && (s.qualityAvg || 0) > ReaderState.filters.qualityMax) return false;
+
+    // Monoculture filter
+    if (ReaderState.filters.monoculture && (!s.monocultureClusters || s.monocultureClusters.length === 0)) {
+      return false;
+    }
+
+    return true;
+  });
+
+  renderAreaList();
+  renderMapMarkers();
+  updateFilterBadge();
+}
+
+// ========== MAP ==========
+
+function initReaderMap() {
+  if (ReaderState.map) return;
+
+  ReaderState.map = L.map('map', {
+    center: [52.5075, 4.9530],
+    zoom: 13,
+    preferCanvas: true
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap',
+    maxZoom: 19
+  }).addTo(ReaderState.map);
+}
+
+function renderMapMarkers() {
+  if (ReaderState.branchHighlight) {
+    ReaderState.branchHighlight.highlightMarkers.forEach(m => m.remove());
+    ReaderState.branchHighlight = null;
+    const banner = document.querySelector('.branch-highlight-banner');
+    if (banner) banner.remove();
+  }
+
+  ReaderState.markers.forEach(m => m.remove());
+  ReaderState.markers = [];
+
+  const areas = ReaderState.filteredAreas;
+  if (!areas || areas.length === 0) return;
+
+  areas.forEach(area => {
+    const score = area.scores.vitalityIndex;
+    const color = getScoreColor(score);
+    const hasMono = area.scores.monocultureClusters?.length > 0;
+
+    const branches = (area.scores.monocultureClusters || [])
+      .slice(0, 3)
+      .map(c => `${c.branchName || c.branchCode}`)
+      .join(', ');
+
+    const marker = L.circleMarker([area.location.lat, area.location.lng], {
+      radius: 10,
+      fillColor: color,
+      color: hasMono ? '#d97706' : color,
+      weight: hasMono ? 3 : 1,
+      opacity: 0.9,
+      fillOpacity: 0.7
+    }).addTo(ReaderState.map);
+
+    marker.bindTooltip(`
+      <strong>${area.pc6}</strong> — ${area.location.street}<br>
+      Vitaliteitsindex: <strong>${score}</strong><br>
+      Branches: ${area.branchCount}<br>
+      ${area.winkelgebied ? `Winkelgebied: ${area.winkelgebied}<br>` : ''}
+      ${branches ? `Top branches: ${branches}` : ''}
+      ${hasMono ? '<br><strong style="color:#d97706">⚠ Monocultuur</strong>' : ''}
+    `, { className: 'custom-tooltip' });
+
+    marker.on('click', () => selectReaderArea(area.pc6));
+    ReaderState.markers.push(marker);
+  });
+
+  if (ReaderState.markers.length > 0) {
+    const group = L.featureGroup(ReaderState.markers);
+    try {
+      ReaderState.map.fitBounds(group.getBounds().pad(0.1));
+    } catch (e) {
+      // single marker, just center on it
+    }
+  }
+}
+
+// ========== SUMMARY ==========
+
+function renderSummary() {
+  const s = ReaderState.data.summary;
+  const m = ReaderState.data.meta;
+
+  document.getElementById('summaryVitality').innerHTML = `<span style="${getScoreClass(s.averageVitality)}">${s.averageVitality.toFixed(1)}</span>`;
+  document.getElementById('summaryAreas').textContent = s.totalAreas;
+  document.getElementById('summaryCritical').textContent = s.criticalAreas;
+  document.getElementById('summaryMono').textContent = s.monocultureAlerts;
+
+  document.getElementById('metaInfo').innerHTML = `
+    <dt>Geproduceerd door</dt><dd style="margin-bottom: 8px;">${m.producer || '—'}</dd>
+    <dt>Exportdatum</dt><dd style="margin-bottom: 8px;">${new Date(m.exportDate).toLocaleString('nl-NL')}</dd>
+    <dt>Versie</dt><dd style="margin-bottom: 8px;">${m.version || '—'}</dd>
+  `;
+}
+
+// ========== AREA LIST ==========
+
+function renderAreaList() {
+  const areas = [...ReaderState.filteredAreas].sort((a, b) => a.scores.vitalityIndex - b.scores.vitalityIndex);
+  const list = document.getElementById('areaList');
+
+  list.innerHTML = areas.map(area => {
+    const s = area.scores;
+    const hasMono = s.monocultureClusters?.length > 0;
+    const badges = [];
+    if (hasMono) badges.push('Monocultuur');
+
+    return `
+      <div class="area-list-item" data-pc6="${area.pc6}">
+        <div class="area-list-item__score" style="${getScoreClass(s.vitalityIndex)}">${s.vitalityIndex}</div>
+        <div class="area-list-item__info">
+          <div class="area-list-item__pc6">${area.pc6}</div>
+          <div class="area-list-item__street">${area.location.street}</div>
+          <div class="area-list-item__street" style="font-size: 10px; color: var(--color-text-dim);">${area.branchCount} branches${area.winkelgebied ? ' • ' + area.winkelgebied : ''}</div>
+          ${hasMono ? '<div class="area-list-item__badges"><span class="area-list-item__badge area-list-item__badge--mono">⚠ Monocultuur</span></div>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.area-list-item').forEach(item => {
+    item.addEventListener('click', () => selectReaderArea(item.dataset.pc6));
+  });
+}
+
+// ========== DETAIL PANEL ==========
+
+function selectReaderArea(pc6) {
+  clearBranchHighlight();
+  ReaderState.selectedPc6 = pc6;
+  const area = ReaderState.data.areas.find(a => a.pc6 === pc6);
+  if (!area) return;
+
+  document.getElementById('readerDetailPanel').classList.add('detail-panel--open');
+  document.getElementById('readerDetailTitle').textContent = `${pc6} — ${area.location.street}`;
+
+  const s = area.scores;
+  const score = s.vitalityIndex;
+  const category = getCategory(score);
+  const categoryLabel = getCategoryLabel(score);
+
+  // Count branches by category
+  const branchMap = {};
+  const branchCodeMap = {};
+  if (area.branches && Array.isArray(area.branches)) {
+    area.branches.forEach(branchCode => {
+      const branchName = resolveBranchName(branchCode);
+      branchMap[branchName] = (branchMap[branchName] || 0) + 1;
+      if (!branchCodeMap[branchName]) branchCodeMap[branchName] = branchCode;
+    });
+  }
+
+  const sortedBranches = Object.entries(branchMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 15);
+
+  const contextSummary = generateContextSummary(area);
+
+  let detailHTML = `
+    <div class="${getCategoryBadgeClass(score)}" style="width: fit-content;">
+      ${categoryLabel}
+    </div>
+
+    <div class="contextual-summary">
+      ${contextSummary}
+    </div>
+
+    <div style="margin-bottom: 16px;">
+      ${renderReaderScoreBar('Economisch', s.economic)}
+      ${renderReaderScoreBar('Veiligheid', s.safety)}
+      ${renderReaderScoreBar('Sociaal', s.social)}
+      ${renderReaderScoreBar('Ruimtelijk', s.spatial)}
+      ${renderReaderScoreBar('Ondermijning', s.undermining)}
+    </div>
+  `;
+
+  if (sortedBranches.length > 0) {
+    detailHTML += `
+      <div style="margin-bottom: 16px;">
+        <div class="section-title">Branches (top ${sortedBranches.length})</div>
+        ${sortedBranches.map(([name, count]) => `
+          <div class="branch-item" data-branch-code="${branchCodeMap[name] || ''}" style="cursor:pointer">
+            <span class="branch-item__name">${name}</span>
+            <span class="branch-item__count">(${count}×)</span>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  if (s.monocultureClusters && s.monocultureClusters.length > 0) {
+    detailHTML += `
+      <div style="margin-bottom: 16px;">
+        <div class="section-title">Monocultuurwaarschuwing</div>
+        ${s.monocultureClusters.map(c => `
+          <div class="mono-badge">⚠ ${c.branchName || c.category} (${c.count}×)</div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  detailHTML += `
+    <div>
+      <div class="section-title">Locatie-informatie</div>
+      <div class="location-info">
+        <div class="location-info__item"><span class="location-info__label">Straat:</span> ${area.location.street}</div>
+        <div class="location-info__item"><span class="location-info__label">Buurt:</span> ${area.location.neighborhood}</div>
+        <div class="location-info__item"><span class="location-info__label">Wijk:</span> ${area.location.district}</div>
+        <div class="location-info__item"><span class="location-info__label">Gemeente:</span> ${area.location.municipality}</div>
+        ${area.winkelgebied ? `<div class="location-info__item"><span class="location-info__label">Winkelgebied:</span> ${area.winkelgebied}</div>` : ''}
+        <div class="location-info__item"><span class="location-info__label">Coördinaten:</span> ${area.location.lat.toFixed(4)}, ${area.location.lng.toFixed(4)}</div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('readerDetailContent').innerHTML = detailHTML;
+
+  // Add click handlers for branch items
+  document.querySelectorAll('#readerDetailContent .branch-item').forEach(item => {
+    if (item.dataset.branchCode) {
+      item.addEventListener('click', () => {
+        highlightBranchOnMap(item.dataset.branchCode);
+      });
+    }
+  });
+
+  // Highlight in list
+  document.querySelectorAll('.area-list-item').forEach(el => {
+    el.classList.toggle('area-list-item--selected', el.dataset.pc6 === pc6);
+  });
+
+  // Pan map
+  ReaderState.map.setView([area.location.lat, area.location.lng], 16);
+}
+
+function renderReaderScoreBar(name, score) {
+  return `
+    <div class="score-bar">
+      <div class="score-bar__header">
+        <span class="score-bar__name">${name}</span>
+        <span class="score-bar__value" style="${getScoreClass(score)}">${score}</span>
+      </div>
+      <div class="score-bar__track">
+        <div class="score-bar__fill" style="width:${score * 10}%;background:${getScoreColor(score)}"></div>
+      </div>
+    </div>
+  `;
+}
+
+function highlightBranchOnMap(branchCode) {
+  clearBranchHighlight();
+
+  const branchName = resolveBranchName(branchCode);
+  const matchingAreas = [];
+  const highlightMarkers = [];
+
+  ReaderState.data.areas.forEach(area => {
+    if (area.branches && area.branches.includes(branchCode)) {
+      matchingAreas.push(area);
+    }
+  });
+
+  if (matchingAreas.length === 0) return;
+
+  // Dim existing markers
+  ReaderState.markers.forEach(m => {
+    m.setStyle({ fillOpacity: 0.15, opacity: 0.2 });
+  });
+
+  // Highlight matching areas
+  matchingAreas.forEach(area => {
+    const count = area.branches.filter(c => c === branchCode).length;
+    const marker = L.circleMarker([area.location.lat, area.location.lng], {
+      radius: 14,
+      fillColor: '#3b82f6',
+      color: '#1d4ed8',
+      weight: 3,
+      opacity: 1,
+      fillOpacity: 0.8
+    }).addTo(ReaderState.map);
+
+    marker.bindTooltip(`<strong>${area.pc6}</strong> — ${area.location.street}<br>${branchName}: ${count}× aanwezig`, { direction: 'top' });
+    marker.on('click', () => selectReaderArea(area.pc6));
+    highlightMarkers.push(marker);
+  });
+
+  ReaderState.branchHighlight = { code: branchCode, name: branchName, highlightMarkers };
+
+  if (highlightMarkers.length > 0) {
+    const group = L.featureGroup(highlightMarkers);
+    ReaderState.map.fitBounds(group.getBounds().pad(0.2));
+  }
+
+  showBranchHighlightBanner(branchName, matchingAreas.length);
+}
+
+function clearBranchHighlight() {
+  if (!ReaderState.branchHighlight) return;
+  ReaderState.branchHighlight.highlightMarkers.forEach(m => m.remove());
+  ReaderState.markers.forEach(m => {
+    m.setStyle({ fillOpacity: 0.7, opacity: 0.9 });
+  });
+  ReaderState.branchHighlight = null;
+  const banner = document.querySelector('.branch-highlight-banner');
+  if (banner) banner.remove();
+}
+
+function showBranchHighlightBanner(branchName, count) {
+  const existing = document.querySelector('.branch-highlight-banner');
+  if (existing) existing.remove();
+
+  const mapContainer = document.querySelector('.map-container');
+  if (!mapContainer) return;
+
+  const banner = document.createElement('div');
+  banner.className = 'branch-highlight-banner';
+  banner.innerHTML = `
+    <span class="branch-highlight-banner__count">${count}</span>
+    <span>locatie${count !== 1 ? 's' : ''} met <strong>${branchName}</strong></span>
+    <button class="branch-highlight-banner__close" title="Wis markering">✕</button>
+  `;
+  banner.querySelector('.branch-highlight-banner__close').addEventListener('click', clearBranchHighlight);
+  mapContainer.appendChild(banner);
+}
+
+// ========== EVENT HANDLERS ==========
+
+document.getElementById('btnLoadFile').addEventListener('click', () => {
+  document.getElementById('fileInput').click();
+});
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  if (e.target.files[0]) loadJsonFile(e.target.files[0]);
+});
+
+const startupDropZone = document.getElementById('startupDropZone');
+if (startupDropZone) {
+  startupDropZone.addEventListener('click', () => {
+    document.getElementById('fileInput').click();
+  });
+}
+
+document.getElementById('btnCloseDetail').addEventListener('click', () => {
+  document.getElementById('readerDetailPanel').classList.remove('detail-panel--open');
+});
+
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+updateThemeButton();
+
+document.getElementById('btnClearFilters').addEventListener('click', () => {
+  ReaderState.filters = {
+    category: '',
+    winkelgebied: '',
+    pc6: '',
+    straat: '',
+    buurt: '',
+    wijk: '',
+    qualityMin: null,
+    qualityMax: null,
+    vulnMin: null,
+    vulnMax: null,
+    monoculture: false
+  };
+  document.getElementById('filterCategory').value = '';
+  document.getElementById('filterWinkelgebied').value = '';
+  document.getElementById('filterPC6').value = '';
+  document.getElementById('filterStraat').value = '';
+  document.getElementById('filterBuurt').value = '';
+  document.getElementById('filterWijk').value = '';
+  document.getElementById('filterVulnMin').value = '';
+  document.getElementById('filterVulnMax').value = '';
+  document.getElementById('filterQualityMin').value = '';
+  document.getElementById('filterQualityMax').value = '';
+  document.getElementById('filterMonoculture').checked = false;
+  applyFilters();
+});
+
+// Filter change listeners
+document.getElementById('filterCategory').addEventListener('change', (e) => {
+  ReaderState.filters.category = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterWinkelgebied').addEventListener('change', (e) => {
+  ReaderState.filters.winkelgebied = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterPC6').addEventListener('input', (e) => {
+  ReaderState.filters.pc6 = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterStraat').addEventListener('change', (e) => {
+  ReaderState.filters.straat = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterBuurt').addEventListener('change', (e) => {
+  ReaderState.filters.buurt = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterWijk').addEventListener('change', (e) => {
+  ReaderState.filters.wijk = e.target.value;
+  applyFilters();
+});
+
+document.getElementById('filterVulnMin').addEventListener('input', (e) => {
+  ReaderState.filters.vulnMin = e.target.value ? parseFloat(e.target.value) : null;
+  applyFilters();
+});
+
+document.getElementById('filterVulnMax').addEventListener('input', (e) => {
+  ReaderState.filters.vulnMax = e.target.value ? parseFloat(e.target.value) : null;
+  applyFilters();
+});
+
+document.getElementById('filterQualityMin').addEventListener('input', (e) => {
+  ReaderState.filters.qualityMin = e.target.value ? parseFloat(e.target.value) : null;
+  applyFilters();
+});
+
+document.getElementById('filterQualityMax').addEventListener('input', (e) => {
+  ReaderState.filters.qualityMax = e.target.value ? parseFloat(e.target.value) : null;
+  applyFilters();
+});
+
+document.getElementById('filterMonoculture').addEventListener('change', (e) => {
+  ReaderState.filters.monoculture = e.target.checked;
+  applyFilters();
+});
+
+// Drag & drop
+const dropZoneElement = document.getElementById('startupDropZone');
+if (dropZoneElement) {
+  dropZoneElement.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZoneElement.style.borderColor = 'var(--color-accent)';
+  });
+
+  dropZoneElement.addEventListener('dragleave', () => {
+    dropZoneElement.style.borderColor = '';
+  });
+
+  dropZoneElement.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZoneElement.style.borderColor = '';
+    if (e.dataTransfer.files[0]) loadJsonFile(e.dataTransfer.files[0]);
+  });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('readerDetailPanel').classList.remove('detail-panel--open');
+  }
+});
+</script>
+</body>
+</html>

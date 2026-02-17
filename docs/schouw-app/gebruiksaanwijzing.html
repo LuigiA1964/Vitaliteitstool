@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schouw-app Gebruiksaanwijzing</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+            background: #ffffff;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid #10b981;
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            color: #064e3b;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px;
+            background: #f0fdf4;
+            border-radius: 8px;
+            border: 2px solid #10b981;
+        }
+
+        .qr-code-container {
+            margin: 30px 0;
+        }
+
+        .qr-code-container img {
+            width: 250px;
+            height: 250px;
+            border: 8px solid #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .qr-instruction {
+            font-size: 18px;
+            font-weight: 600;
+            color: #064e3b;
+            margin-bottom: 20px;
+        }
+
+        .qr-url {
+            font-size: 16px;
+            color: #10b981;
+            word-break: break-all;
+            font-weight: 600;
+            margin-top: 15px;
+        }
+
+        /* Main Content Sections */
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #064e3b;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #10b981;
+        }
+
+        h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #10b981;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* Installation Section */
+        .installation-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            border-radius: 4px;
+        }
+
+        .installation-item h3 {
+            margin-top: 0;
+            color: #064e3b;
+        }
+
+        .installation-item p {
+            margin-bottom: 0;
+            font-size: 14px;
+        }
+
+        .icon-note {
+            font-family: monospace;
+            font-size: 16px;
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        /* How It Works - Steps */
+        .steps-list {
+            counter-reset: step;
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .steps-list li {
+            counter-increment: step;
+            margin-bottom: 20px;
+            padding-left: 60px;
+            position: relative;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .steps-list li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 45px;
+            height: 45px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* Import Section */
+        .import-box {
+            background: #f0fdf4;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #10b981;
+            margin-top: 20px;
+        }
+
+        .import-box p {
+            margin-bottom: 10px;
+        }
+
+        .import-step {
+            margin-top: 15px;
+            padding: 12px;
+            background: #ffffff;
+            border-radius: 4px;
+            border-left: 3px solid #064e3b;
+            font-size: 14px;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 2px solid #10b981;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: #1e293b;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 20mm;
+                margin: 0;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 15mm;
+            }
+
+            header {
+                margin-bottom: 30px;
+                padding-bottom: 15px;
+            }
+
+            h1 {
+                font-size: 36px;
+                margin-bottom: 5px;
+            }
+
+            h2 {
+                font-size: 24px;
+                margin-top: 25px;
+                margin-bottom: 15px;
+                page-break-inside: avoid;
+            }
+
+            section {
+                margin-bottom: 30px;
+                page-break-inside: avoid;
+            }
+
+            .qr-section {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+                padding: 20px;
+            }
+
+            .qr-code-container img {
+                width: 200px;
+                height: 200px;
+            }
+
+            .steps-list li {
+                margin-bottom: 12px;
+                padding-left: 50px;
+            }
+
+            .steps-list li::before {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .installation-item,
+            .import-box {
+                margin-bottom: 15px;
+            }
+
+            footer {
+                margin-top: 30px;
+                padding-top: 10px;
+                font-size: 12px;
+            }
+
+            a {
+                color: #10b981;
+                text-decoration: none;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+
+            .qr-code-container img {
+                width: 200px;
+                height: 200px;
+            }
+
+            .steps-list li {
+                padding-left: 50px;
+            }
+
+            .steps-list li::before {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>Schouw-app — Veldinspectie</h1>
+            <p class="subtitle">City Deal Dynamische Binnensteden</p>
+        </header>
+
+        <!-- QR Code Section -->
+        <section class="qr-section">
+            <p class="qr-instruction">Scan de QR-code met uw telefoon om de Schouw-app te openen</p>
+            <div class="qr-code-container">
+                <img src="data:image/png;base64,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" alt="QR-code voor Schouw-app">
+            </div>
+            <p class="qr-url">https://app.knowledgebydata.nl/schouw-app/</p>
+        </section>
+
+        <!-- Installation Section -->
+        <section>
+            <h2>Installatie op uw telefoon</h2>
+
+            <div class="installation-item">
+                <h3>iPhone</h3>
+                <p><strong>Stap 1:</strong> Open de link in Safari</p>
+                <p><strong>Stap 2:</strong> Tik op het deel-icoon <span class="icon-note">□↑</span></p>
+                <p><strong>Stap 3:</strong> Kies 'Zet op beginscherm'</p>
+                <p style="margin-top: 15px; color: #10b981;"><strong>Klaar!</strong> De app is nu geïnstalleerd op uw beginscherm.</p>
+            </div>
+
+            <div class="installation-item">
+                <h3>Android</h3>
+                <p><strong>Stap 1:</strong> Open de link in Chrome</p>
+                <p><strong>Stap 2:</strong> Tik op het menu <span class="icon-note">⋮</span> (drie stippen)</p>
+                <p><strong>Stap 3:</strong> Kies 'Toevoegen aan startscherm'</p>
+                <p style="margin-top: 15px; color: #10b981;"><strong>Klaar!</strong> De app is nu geïnstalleerd op uw startscherm.</p>
+            </div>
+
+            <div class="installation-item">
+                <h3>Offline werking</h3>
+                <p>Na installatie werkt de app ook zonder internetverbinding. Uw inspecties worden lokaal opgeslagen en gesynchroniseerd wanneer u weer online bent.</p>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section>
+            <h2>Hoe werkt het?</h2>
+            <p>De Schouw-app helpt u bij het uitvoeren van veldinspecties. Volg deze stappen:</p>
+
+            <ol class="steps-list">
+                <li>
+                    <strong>Open de app op uw telefoon</strong><br>
+                    Tik op het app-icoon op uw startscherm of beginscherm.
+                </li>
+                <li>
+                    <strong>Tik op "Nieuwe inspectie"</strong><br>
+                    Start een nieuwe veldinspectie door op de knop 'Nieuwe inspectie' te drukken.
+                </li>
+                <li>
+                    <strong>Voer het adres en de postcode in</strong><br>
+                    Typ het adres en de postcode van het pand dat u wilt inspecteren. GPS wordt automatisch bepaald op basis van uw locatie.
+                </li>
+                <li>
+                    <strong>Beoordeel het pand in 6 stappen</strong><br>
+                    Antwoord op vragen over:<br>
+                    • <strong>Pandkwaliteit</strong> — staat van het gebouw<br>
+                    • <strong>Omgeving</strong> — situatie van de omgeving<br>
+                    • <strong>Ondermijning</strong> — tekenen van ondermijning<br>
+                    • <strong>Leefbaarheid</strong> — kwaliteit van het leven in het pand<br>
+                    • <strong>Veiligheid</strong> — veiligheidssituatie<br>
+                    • <strong>Opmerkingen</strong> — aanvullende notities
+                </li>
+                <li>
+                    <strong>Sla de inspectie op</strong><br>
+                    Controleer uw gegevens en sla de inspectie op met de opslaanknop.
+                </li>
+                <li>
+                    <strong>Exporteer als JSON-bestand</strong><br>
+                    Ga naar het menu en kies 'Exporteer alle inspecties' om uw gegevens als JSON-bestand te downloaden.
+                </li>
+            </ol>
+        </section>
+
+        <!-- Import Section -->
+        <section>
+            <h2>Het JSON-bestand importeren</h2>
+
+            <div class="import-box">
+                <p>Het geëxporteerde JSON-bestand kunt u importeren in de <strong>Vitaliteitstool</strong> voor verdere analyse en verwerking.</p>
+
+                <div class="import-step">
+                    <strong>Importstappen:</strong><br>
+                    1. Open de Vitaliteitstool<br>
+                    2. Ga naar <strong>Data beheer</strong><br>
+                    3. Klik op <strong>Importeer dataset</strong><br>
+                    4. Selecteer <strong>Schouwplaatsen</strong><br>
+                    5. Upload uw JSON-bestand
+                </div>
+
+                <p style="margin-top: 15px;">Uw inspecties worden vervolgens verwerkt en gevisualiseerd in de Vitaliteitstool.</p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>© Knowledge by Data B.V. in opdracht van de City Deal Dynamische Binnensteden</p>
+            <p style="margin-top: 10px; font-size: 12px;">Gebruiksaanwijzing Schouw-app — Veldinspectie</p>
+        </footer>
+    </div>
+</body>
+</html>
